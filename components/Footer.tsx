@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, MapPin, Mail, ExternalLink, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
+import { ShieldCheck, MapPin, Mail, ExternalLink } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -10,8 +11,14 @@ export function Footer() {
           {/* Brand and Mission */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2fa8cc] to-[#1f4e79] flex items-center justify-center text-white ring-2 ring-white/15">
-                <GraduationCap className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-white/15 shrink-0 bg-white flex items-center justify-center">
+                <Image
+                  src="/logo.jpeg"
+                  alt="P.P.E.S. Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-bold text-white text-lg tracking-tight font-display">

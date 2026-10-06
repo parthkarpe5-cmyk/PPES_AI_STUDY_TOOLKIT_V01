@@ -19,12 +19,16 @@ import {
 
 function PromptBuilderContent() {
   const searchParams = useSearchParams();
+
+  // Resolve initial values from URL params (passed from /which-ai or /study)
   const initialGoal = searchParams.get('goal') || 'understand-topic';
+  const initialClass = searchParams.get('class') || '10';
+  const initialSubject = searchParams.get('subject') || 'science';
 
   // Form State
-  const [classLevel, setClassLevel] = useState<string>('10');
-  const [subjectId, setSubjectId] = useState<string>('science');
-  const [topic, setTopic] = useState<string>('Electricity');
+  const [classLevel, setClassLevel] = useState<string>(initialClass);
+  const [subjectId, setSubjectId] = useState<string>(initialSubject);
+  const [topic, setTopic] = useState<string>('');
   const [goalId, setGoalId] = useState<string>(initialGoal);
   const [styleId, setStyleId] = useState<string>('simple');
   const [examFocus, setExamFocus] = useState<boolean>(true);
@@ -39,11 +43,16 @@ function PromptBuilderContent() {
   const sampleTopics =
     currentSubject.sampleTopicsByClass[classLevel as '8' | '9' | '10'] || [];
 
-  // Generate prompt automatically on first load or when user clicks
+  // Sync state when URL params change (e.g. user navigates back from /which-ai)
   useEffect(() => {
-    handleGenerate();
+    const g = searchParams.get('goal');
+    const c = searchParams.get('class');
+    const s = searchParams.get('subject');
+    if (g) setGoalId(g);
+    if (c) setClassLevel(c);
+    if (s) setSubjectId(s);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   const handleGenerate = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -85,22 +94,13 @@ function PromptBuilderContent() {
   const handleReset = () => {
     setClassLevel('10');
     setSubjectId('science');
-    setTopic('Electricity');
+    setTopic('');
     setGoalId('understand-topic');
     setStyleId('simple');
     setExamFocus(true);
     setAdditionalNotes('');
     setErrorMessage(null);
-
-    const generated = generateStudyPrompt({
-      classLevel: '10',
-      subjectId: 'science',
-      topic: 'Electricity',
-      goalId: 'understand-topic',
-      styleId: 'simple',
-      examFocus: true
-    });
-    setResult(generated);
+    setResult(null);
   };
 
   return (

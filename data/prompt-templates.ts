@@ -153,6 +153,79 @@ export const STUDY_GOALS: GoalOption[] = [
       'Key takeaway rule of thumb to never forget it'
     ],
     sampleQuestionClosing: 'Ask me a simple scenario question to verify if the analogy clicked for me.'
+  },
+  // ─── CREATE goals — each has its own explicit task identity ────────────────
+  {
+    id: 'create-poster',
+    label: 'Create a poster',
+    icon: '🖼️',
+    description: 'Design a structured educational poster layout with sections and visual suggestions.',
+    taskInstruction: 'Help me plan and structure a detailed educational poster on this topic. Describe the layout, sections, headings, key visuals, colour suggestions, and content for each section.',
+    outputStructure: [
+      'Poster title and tagline suggestion',
+      'Layout structure (sections and their positions)',
+      'Content bullet points for each section',
+      'Key diagram or visual description to include',
+      'Colour scheme and design tips for a school display'
+    ],
+    sampleQuestionClosing: 'Suggest 3 alternative poster title options at the end.'
+  },
+  {
+    id: 'create-chart',
+    label: 'Create a comparison chart',
+    icon: '📊',
+    description: 'Generate a side-by-side comparison table of key concepts, properties, or differences.',
+    taskInstruction: 'Create a well-structured comparison table that clearly contrasts the key properties, characteristics, or differences related to this topic.',
+    outputStructure: [
+      'A neatly formatted comparison/contrast table with labelled columns and rows',
+      'At least 5–6 distinct comparison parameters relevant to the syllabus',
+      'A one-sentence summary of the key difference at the end'
+    ],
+    sampleQuestionClosing: 'Highlight the 2 most important differences that are frequently asked in board exams.'
+  },
+  {
+    id: 'create-diagram',
+    label: 'Create a diagram description',
+    icon: '📐',
+    description: 'Describe a labelled diagram step-by-step for drawing in notebooks or presentations.',
+    taskInstruction: 'Describe a detailed, labelled diagram for this topic in step-by-step drawing instructions. Include all labels, arrows, and what each part represents.',
+    outputStructure: [
+      'What the diagram shows and why it is useful',
+      'Step-by-step instructions for drawing the diagram',
+      'Complete list of labels with descriptions of what each label represents',
+      'Arrow directions and what they indicate',
+      'Common mistakes students make when drawing this diagram'
+    ],
+    sampleQuestionClosing: 'List the labels that are most commonly asked to be identified in board exams.'
+  },
+  {
+    id: 'create-mindmap',
+    label: 'Create a mind map',
+    icon: '🗺️',
+    description: 'Build a hierarchical mind map with the main concept at the centre and branches for subtopics.',
+    taskInstruction: 'Create a structured mind map outline for this topic. Show the central concept, main branches (key sub-topics), and leaf nodes (key terms/facts) under each branch.',
+    outputStructure: [
+      'Central concept (mind map title)',
+      '4–6 main branches with their labels',
+      '3–5 leaf nodes / key facts under each branch',
+      'Connections between related branches where relevant'
+    ],
+    sampleQuestionClosing: 'Suggest which branches to study first for maximum exam marks.'
+  },
+  {
+    id: 'create-presentation',
+    label: 'Create a presentation outline',
+    icon: '🎤',
+    description: 'Generate a slide-by-slide presentation plan with content and talking points for each slide.',
+    taskInstruction: 'Create a detailed slide-by-slide presentation outline on this topic, suitable for a school class or project presentation. Include slide titles, key bullet points, and speaker notes.',
+    outputStructure: [
+      'Slide 1: Title slide (topic, presenter name placeholder, class)',
+      'Slide 2: Introduction / Hook',
+      '3–5 Content slides with key points and a visual suggestion per slide',
+      'A "Key Takeaways" slide',
+      'A closing "Thank You + Q&A" slide'
+    ],
+    sampleQuestionClosing: 'Suggest one engaging opening line the presenter could use to start the presentation confidently.'
   }
 ];
 

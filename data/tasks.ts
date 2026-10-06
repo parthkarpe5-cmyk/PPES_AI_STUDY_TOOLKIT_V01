@@ -66,14 +66,27 @@ export const STUDY_TASKS: TaskOption[] = [
     exampleScenario: 'e.g., 5 Case-study questions on Heredity and Evolution with answers.'
   },
   {
+    id: 'math-solve',
+    name: 'Math Problem Solving',
+    icon: '📐',
+    shortDesc: 'Work through numerical problems, algebra equations, and geometric proofs step-by-step.',
+    requiredCapability: 'Step-by-step mathematical reasoning, equation solving & proof structure',
+    recommendedApproach: 'Use an AI assistant with strict step-by-step working or specialized math solvers.',
+    recommendedToolIds: ['photomath', 'chatgpt', 'claude'],
+    reason: 'Photomath provides precise equation steps, while ChatGPT and Claude explain the underlying mathematical theorem.',
+    caution: 'Never copy final numerical answers without understanding each algebraic transformation.',
+    suggestedPromptGoal: 'solve-problem',
+    exampleScenario: 'e.g., Solving Quadratic Equations by completing the square or proving Basic Proportionality Theorem.'
+  },
+  {
     id: 'research',
     name: 'Research',
     icon: '🔎',
     shortDesc: 'Explore background information, real-world examples, and project topics.',
     requiredCapability: 'Web-connected exploration & source synthesis',
-    recommendedApproach: 'Use a web-enabled multimodal AI with verified citations.',
-    recommendedToolIds: ['gemini', 'chatgpt'],
-    reason: 'Gemini has direct access to live Google search information and cites sources directly for school projects.',
+    recommendedApproach: 'Use a web-enabled research AI with verified footnote citations.',
+    recommendedToolIds: ['perplexity', 'gemini', 'chatgpt'],
+    reason: 'Perplexity and Gemini cite clickable web sources directly, making it easier to fact-check school project material.',
     caution: 'Verify all statistics, historical dates, and scientific facts using recognized educational portals.',
     suggestedPromptGoal: 'understand-topic',
     exampleScenario: 'e.g., Finding real-life examples of renewable energy projects in India.'

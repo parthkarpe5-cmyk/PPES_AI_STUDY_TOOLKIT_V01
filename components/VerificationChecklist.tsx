@@ -147,30 +147,31 @@ export function VerificationChecklist() {
           return (
             <div
               key={step.id}
+              role="checkbox"
+              aria-checked={isChecked}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault();
+                  toggleCheck(step.id);
+                }
+              }}
               onClick={() => toggleCheck(step.id)}
-              className={`cursor-pointer rounded-2xl border transition-all duration-200 p-5 sm:p-6 ${
+              className={`cursor-pointer rounded-2xl border transition-all duration-200 p-5 sm:p-6 focus:outline-hidden focus:ring-2 focus:ring-[#2fa8cc] select-none ${
                 isChecked
                   ? 'bg-[#e8f6fa]/60 border-[#2fa8cc] shadow-xs'
                   : 'bg-white border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:shadow-xs'
               }`}
             >
               <div className="flex items-start gap-4">
-                {/* Checkbox Icon */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCheck(step.id);
-                  }}
-                  className="mt-0.5 text-slate-400 hover:text-[#2fa8cc] focus:outline-hidden cursor-pointer"
-                  aria-label={`Toggle ${step.title}`}
-                >
+                {/* Visual Checkbox Indicator (Non-nested) */}
+                <span className="mt-0.5 text-slate-400" aria-hidden="true">
                   {isChecked ? (
                     <CheckSquare className="w-6 h-6 text-[#2fa8cc]" />
                   ) : (
                     <Square className="w-6 h-6 text-slate-300" />
                   )}
-                </button>
+                </span>
 
                 <div className="flex-1 space-y-2.5">
                   <div className="flex items-center gap-2 flex-wrap">

@@ -37,7 +37,8 @@ export const AI_TOOLS: Record<string, AITool> = {
       'practice-questions',
       'writing',
       'understand-image',
-      'speaking-practice'
+      'speaking-practice',
+      'solve-problem'
     ],
     limitations: [
       'Can occasionally hallucinate facts or formulas with high confidence',
@@ -139,9 +140,62 @@ export const AI_TOOLS: Record<string, AITool> = {
     accessUrl: 'https://notebooklm.google.com',
     isFreeOrFreemium: 'Free with Google account'
   },
+  photomath: {
+    id: 'photomath',
+    name: 'Photomath / Math Solvers',
+    badge: 'Step-by-Step Math',
+    positioning: 'Specialized for checking arithmetic, equations, and algebra.',
+    description: 'A focused math assistance application that breaks down equations and arithmetic into detailed step-by-step mathematical working.',
+    capabilities: [
+      'Step-by-step algebraic equation solving',
+      'Arithmetic and fraction verification',
+      'Graph plotting and quadratic roots verification'
+    ],
+    strengths: [
+      'Breaks down every mathematical step without skipping calculations',
+      'Great for self-checking homework calculations',
+      'Free mobile and web access'
+    ],
+    suitableTasks: [
+      'solve-problem',
+      'study-understand'
+    ],
+    limitations: [
+      'Only works for mathematical and algebraic calculations',
+      'Does not explain theoretical context or word problems as deeply as a teacher'
+    ],
+    accessUrl: 'https://photomath.com',
+    isFreeOrFreemium: 'Free app available'
+  },
+  perplexity: {
+    id: 'perplexity',
+    name: 'Perplexity',
+    badge: 'Cited Research',
+    positioning: 'Search-grounded answer engine with direct source citations.',
+    description: 'An AI search assistant that pulls answers directly from current educational websites and attaches footnotes for every fact.',
+    capabilities: [
+      'Web-connected research exploration',
+      'Direct footnote citations for facts and numbers',
+      'Current affairs and background context'
+    ],
+    strengths: [
+      'Shows exactly where each sentence or fact came from',
+      'Makes fact-checking easy by providing clickable links to original sources',
+      'Free access without requiring complicated setup'
+    ],
+    suitableTasks: [
+      'research',
+      'study-understand'
+    ],
+    limitations: [
+      'Can sometimes cite non-curriculum international sources; cross-check with NCERT'
+    ],
+    accessUrl: 'https://www.perplexity.ai',
+    isFreeOrFreemium: 'Free tier available'
+  },
   copilot: {
     id: 'copilot',
-    name: 'GitHub Copilot / Coding AI',
+    name: 'Coding Assistant / Copilot',
     badge: 'Programming & Logic',
     positioning: 'Coding-focused AI assistant.',
     description: 'Specialized for writing code, debugging syntax errors, explaining Python or HTML scripts, and algorithmic thinking.',
@@ -165,6 +219,6 @@ export const AI_TOOLS: Record<string, AITool> = {
       'Do not use for theory subjects like History, Geography, or Literature'
     ],
     accessUrl: 'https://github.com/features/copilot',
-    isFreeOrFreemium: 'Free tier available for students / Web alternatives exist'
+    isFreeOrFreemium: 'Coding tool. Free browser alternatives exist (Google Colab, Replit, or ChatGPT free coding mode)'
   }
 };
