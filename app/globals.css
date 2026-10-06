@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Prarambha Path Brand Colors (Extracted directly from prarambhapath.com) */
+  --sky: #2fa8cc;            /* Signature Primary Sky Blue / Cyan */
+  --deep-blue: #1f4e79;      /* Academic Deep Blue - Headings, Secondary */
+  --navy: #0d1f35;           /* Midnight Navy - Headers, Hero, Dark accents, Footer */
+  --saffron: #ff6b00;        /* Indian Saffron / Warm Orange - Primary CTA buttons */
+  --gold: #c9a227;           /* Gurukul Gold - Badges, ratings, active indicators */
+  --light-blue: #e8f6fa;     /* Soft Blue Tint - Backgrounds & card highlights */
+  --surface-alt: #f5f8fa;    /* Secondary surface background */
+  --border: #e2e8f0;         /* Clean border color */
+  --border-muted: #edf2f7;   /* Subtle divider border */
+  
+  /* Text Contrast Standards */
+  --foreground: #1a1a1a;     /* High-contrast dark charcoal body text */
+  --muted-foreground: #5a6b7b; /* Accessible slate-blue supporting text */
+  --background: #ffffff;     /* Pure clean background */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --color-sky: #2fa8cc;
+  --color-deep-blue: #1f4e79;
+  --color-navy: #0d1f35;
+  --color-saffron: #ff6b00;
+  --color-gold: #c9a227;
+  --color-light-blue: #e8f6fa;
+  --color-surface-alt: #f5f8fa;
+  --color-border: #e2e8f0;
+  --color-muted-foreground: #5a6b7b;
+  --color-foreground: #1a1a1a;
+  --color-background: #ffffff;
+  
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-space-grotesk), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Explicitly enforce light theme default to eliminate unwanted dark inversion */
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #fafbfc;
+  color: #1a1a1a;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Heading Standard */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+}
+
+/* Custom Utilities for PPES Brand */
+.bg-navy {
+  background-color: #0d1f35;
+}
+
+.text-navy {
+  color: #0d1f35;
+}
+
+.bg-deep-blue {
+  background-color: #1f4e79;
+}
+
+.text-deep-blue {
+  color: #1f4e79;
+}
+
+.bg-sky {
+  background-color: #2fa8cc;
+}
+
+.text-sky {
+  color: #2fa8cc;
+}
+
+.border-sky {
+  border-color: #2fa8cc;
+}
+
+.bg-saffron {
+  background-color: #ff6b00;
+}
+
+.text-saffron {
+  color: #ff6b00;
+}
+
+.border-saffron {
+  border-color: #ff6b00;
+}
+
+.bg-gold {
+  background-color: #c9a227;
+}
+
+.text-gold {
+  color: #c9a227;
+}
+
+.border-gold {
+  border-color: #c9a227;
+}
+
+.bg-light-blue {
+  background-color: #e8f6fa;
+}
+
+/* Smooth Focus Ring */
+*:focus-visible {
+  outline: 2px solid #2fa8cc;
+  outline-offset: 2px;
 }

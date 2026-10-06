@@ -13,9 +13,7 @@ import {
   Target,
   Layers,
   Wand2,
-  HelpCircle,
   RotateCcw,
-  Check,
   AlertCircle
 } from 'lucide-react';
 
@@ -109,33 +107,33 @@ function PromptBuilderContent() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-semibold">
-          <Wand2 className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#2fa8cc]/10 text-[#1f4e79] border border-[#2fa8cc]/30 text-xs font-bold uppercase tracking-wider">
+          <Wand2 className="w-3.5 h-3.5 text-[#2fa8cc]" />
           <span>Step 2: Ask with Precision</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1f4e79] tracking-tight font-display">
           Guided Study Prompt Builder
         </h1>
-        <p className="text-sm text-slate-600 leading-relaxed">
+        <p className="text-sm sm:text-base text-[#5a6b7b] leading-relaxed">
           Select your class, subject, and learning goal. We will construct a high-yield, pedagogy-grounded prompt ready to paste into your AI assistant.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Form: Form Inputs (7 cols on Desktop) */}
-        <div className="lg:col-span-6 space-y-6 bg-white p-5 sm:p-7 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+        {/* Left Form: Form Inputs (6 cols on Desktop) */}
+        <div className="lg:col-span-6 space-y-6 bg-white p-5 sm:p-7 rounded-2xl border border-[#e2e8f0] shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3">
+            <h2 className="text-base font-bold text-[#1f4e79] font-display flex items-center gap-2">
               <span>Study Details</span>
-              <span className="text-xs text-slate-400 font-normal">(No technical jargon needed)</span>
+              <span className="text-xs text-[#5a6b7b] font-normal">(Curriculum-grounded)</span>
             </h2>
             <button
               type="button"
               onClick={handleReset}
-              className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium transition-colors"
+              className="text-xs text-[#5a6b7b] hover:text-[#1f4e79] flex items-center gap-1 font-medium transition-colors"
               title="Reset form to defaults"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
             </button>
           </div>
@@ -143,8 +141,8 @@ function PromptBuilderContent() {
           <form onSubmit={handleGenerate} className="space-y-5">
             {/* 1. Class Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-indigo-600" />
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] font-display flex items-center gap-1.5">
+                <GraduationCap className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 1. Select Your Class
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -157,8 +155,8 @@ function PromptBuilderContent() {
                       onClick={() => setClassLevel(c.value)}
                       className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all text-center ${
                         isSelected
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs ring-2 ring-indigo-600/20'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                          ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs ring-2 ring-[#1f4e79]/20'
+                          : 'bg-[#fafbfc] text-[#1a1a1a] border-[#e2e8f0] hover:bg-[#e8f6fa] hover:border-[#2fa8cc]/50'
                       }`}
                     >
                       {c.label}
@@ -170,8 +168,8 @@ function PromptBuilderContent() {
 
             {/* 2. Subject Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] font-display flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 2. Select Subject
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -184,8 +182,8 @@ function PromptBuilderContent() {
                       onClick={() => setSubjectId(s.id)}
                       className={`p-2.5 rounded-xl text-left border transition-all flex items-center gap-2 ${
                         isSelected
-                          ? 'bg-indigo-50 border-indigo-600 text-indigo-950 font-bold shadow-xs'
-                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-medium'
+                          ? 'bg-[#e8f6fa] border-[#2fa8cc] text-[#1f4e79] font-bold shadow-xs ring-1 ring-[#2fa8cc]'
+                          : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa] hover:border-[#2fa8cc]/40 text-xs font-medium'
                       }`}
                     >
                       <span className="text-lg">{s.icon}</span>
@@ -198,8 +196,8 @@ function PromptBuilderContent() {
 
             {/* 3. Topic Input & Suggestions */}
             <div className="space-y-2">
-              <label htmlFor="topic-input" className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Target className="w-3.5 h-3.5 text-indigo-600" />
+              <label htmlFor="topic-input" className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] font-display flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 3. Topic / Chapter Name
               </label>
               <input
@@ -211,13 +209,13 @@ function PromptBuilderContent() {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="e.g. Electricity, French Revolution, Quadratic Equations..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium text-slate-900 bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-xs"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] text-sm font-medium text-[#1a1a1a] bg-white focus:outline-hidden focus:ring-2 focus:ring-[#2fa8cc] focus:border-[#2fa8cc] shadow-xs"
               />
 
               {/* Sample Topic Chips */}
               {sampleTopics.length > 0 && (
                 <div className="pt-1">
-                  <span className="text-[11px] font-semibold text-slate-400 block mb-1">
+                  <span className="text-[11px] font-semibold text-[#5a6b7b] block mb-1">
                     Quick suggestions for Class {classLevel} {currentSubject.name}:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -228,8 +226,8 @@ function PromptBuilderContent() {
                         onClick={() => handleTopicChipClick(t)}
                         className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all ${
                           topic === t
-                            ? 'bg-indigo-600 text-white border-indigo-600 font-semibold'
-                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200'
+                            ? 'bg-[#1f4e79] text-white border-[#1f4e79] font-semibold shadow-xs'
+                            : 'bg-[#fafbfc] text-[#1a1a1a] border-[#e2e8f0] hover:bg-[#e8f6fa] hover:text-[#1f4e79] hover:border-[#2fa8cc]/40'
                         }`}
                       >
                         {t}
@@ -242,8 +240,8 @@ function PromptBuilderContent() {
 
             {/* 4. Goal Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] font-display flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 4. What is your Study Goal?
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
@@ -256,16 +254,16 @@ function PromptBuilderContent() {
                       onClick={() => setGoalId(g.id)}
                       className={`p-2.5 rounded-xl text-left border transition-all flex items-start gap-2.5 ${
                         isSelected
-                          ? 'bg-indigo-50 border-indigo-600 shadow-xs'
-                          : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                          ? 'bg-[#e8f6fa] border-[#2fa8cc] shadow-xs'
+                          : 'bg-[#fafbfc] border-[#e2e8f0] hover:bg-[#e8f6fa]'
                       }`}
                     >
                       <span className="text-base shrink-0">{g.icon}</span>
                       <div className="min-w-0">
-                        <span className={`text-xs font-bold block truncate ${isSelected ? 'text-indigo-950' : 'text-slate-800'}`}>
+                        <span className={`text-xs font-bold block truncate ${isSelected ? 'text-[#1f4e79]' : 'text-[#1a1a1a]'}`}>
                           {g.label}
                         </span>
-                        <span className="text-[10px] text-slate-500 line-clamp-1">
+                        <span className="text-[10px] text-[#5a6b7b] line-clamp-1">
                           {g.description}
                         </span>
                       </div>
@@ -277,8 +275,8 @@ function PromptBuilderContent() {
 
             {/* 5. Explanation Style */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <label className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] font-display flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 5. Explanation Style
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -291,8 +289,8 @@ function PromptBuilderContent() {
                       onClick={() => setStyleId(s.id)}
                       className={`py-2 px-2.5 rounded-xl text-center border transition-all text-xs ${
                         isSelected
-                          ? 'bg-indigo-600 text-white border-indigo-600 font-bold shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-medium'
+                          ? 'bg-[#2fa8cc] text-white border-[#2fa8cc] font-bold shadow-xs'
+                          : 'bg-[#fafbfc] text-[#1a1a1a] border-[#e2e8f0] hover:bg-[#e8f6fa] font-medium'
                       }`}
                     >
                       {s.label}
@@ -303,15 +301,15 @@ function PromptBuilderContent() {
             </div>
 
             {/* 6. Exam Focus Toggle & Optional note */}
-            <div className="pt-2 border-t border-slate-100 space-y-3">
-              <label className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100/80 transition-colors">
-                <div className="flex items-center gap-2">
+            <div className="pt-2 border-t border-[#e2e8f0] space-y-3">
+              <label className="flex items-center justify-between p-3 rounded-xl bg-[#fafbfc] border border-[#e2e8f0] cursor-pointer hover:bg-[#e8f6fa]/60 transition-colors">
+                <div className="flex items-center gap-2.5">
                   <span className="text-base">🎯</span>
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-slate-900">
+                    <span className="text-xs font-bold text-[#1f4e79]">
                       Exam & Scoring Focus
                     </span>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-[#5a6b7b]">
                       Includes common marking traps, full-mark keywords, and exam weightage
                     </span>
                   </div>
@@ -320,7 +318,7 @@ function PromptBuilderContent() {
                   type="checkbox"
                   checked={examFocus}
                   onChange={(e) => setExamFocus(e.target.checked)}
-                  className="w-4 h-4 text-indigo-600 rounded-sm border-slate-300 focus:ring-indigo-500"
+                  className="w-4 h-4 text-[#ff6b00] rounded-sm border-slate-300 focus:ring-[#ff6b00]"
                 />
               </label>
 
@@ -331,7 +329,7 @@ function PromptBuilderContent() {
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
                   placeholder="Optional: Specific doubt or formula (e.g. Ohm's law graph, numericals only)"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl border border-[#e2e8f0] bg-[#fafbfc] text-[#1a1a1a] focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-[#2fa8cc]"
                 />
               </div>
             </div>
@@ -344,11 +342,11 @@ function PromptBuilderContent() {
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit Button with PPES Saffron Brand Gradient */}
             <button
               type="submit"
               id="generate-prompt-btn"
-              className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#ff6b00] to-orange-600 hover:shadow-lg shadow-md shadow-[#ff6b00]/25 text-white font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
               <Wand2 className="w-4 h-4" />
               <span>Generate My High-Yield Prompt</span>
@@ -361,24 +359,24 @@ function PromptBuilderContent() {
           {result ? (
             <PromptResultCard result={result} />
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3">
+            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-8 text-center space-y-3">
               <Sparkles className="w-8 h-8 text-slate-300 mx-auto" />
-              <h3 className="text-base font-bold text-slate-700">
+              <h3 className="text-base font-bold text-[#1f4e79] font-display">
                 Ready to Generate
               </h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <p className="text-xs text-[#5a6b7b] max-w-sm mx-auto">
                 Fill in the study details on the left and click &ldquo;Generate My High-Yield Prompt&rdquo;.
               </p>
             </div>
           )}
 
           {/* Quick Learning Tip */}
-          <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs text-indigo-900 space-y-1">
-            <span className="font-bold flex items-center gap-1">
-              <span>💡</span> Prompting Philosophy:
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#e8f6fa]/70 border border-[#2fa8cc]/30 text-xs text-[#1f4e79] space-y-1.5">
+            <span className="font-bold font-display flex items-center gap-1.5 text-sm text-[#1f4e79]">
+              <span>💡</span> Prarambh Path Philosophy:
             </span>
-            <p className="text-indigo-800 leading-relaxed">
-              Never ask AI to simply do your homework. Giving it clear constraints (such as asking for steps, analogies, and quizzes) turns the AI into a 24/7 personal tutor.
+            <p className="text-[#1f4e79]/90 leading-relaxed text-xs">
+              Never ask AI to simply do your homework. Giving it clear constraints (such as asking for steps, analogies, and quizzes) turns the AI into a patient 24/7 personal tutor.
             </p>
           </div>
         </div>
@@ -392,7 +390,7 @@ export default function PromptBuilderPage() {
     <Suspense
       fallback={
         <div className="max-w-4xl mx-auto py-16 px-4 text-center">
-          <div className="animate-pulse text-indigo-600 font-semibold">
+          <div className="animate-pulse text-[#2fa8cc] font-semibold">
             Loading Prompt Builder...
           </div>
         </div>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
@@ -7,21 +7,29 @@ import { Footer } from '@/components/Footer';
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-inter',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#4f46e5',
+  themeColor: '#0d1f35',
 };
 
 export const metadata: Metadata = {
   title: 'Prarambh Path — AI Study Toolkit | Class 8–10',
   description:
-    'Learn to use AI to learn better. An AI literacy and prompt engineering toolkit for Class 8–10 students following the philosophy: Choose. Ask. Check. Learn.',
+    'Learn to use AI to learn better. An educational AI literacy and prompt engineering toolkit for Class 8–10 students following the Gurukul-inspired philosophy: Choose. Ask. Check. Learn.',
   keywords: [
     'Prarambh Path',
+    'PPES',
     'AI Study Toolkit',
     'Class 8 AI Study',
     'Class 9 AI Study',
@@ -38,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.className} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-slate-50/50 text-slate-900 selection:bg-indigo-500 selection:text-white">
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-[#fafbfc] text-[#1a1a1a] selection:bg-[#ff6b00] selection:text-white font-sans">
         <Navbar />
         <main className="flex-1 flex flex-col">
           {children}

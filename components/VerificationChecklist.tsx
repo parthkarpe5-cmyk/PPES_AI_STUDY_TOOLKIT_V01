@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckSquare, Square, ShieldAlert, Sparkles, BookOpen, Search, Brain, HelpCircle, UserCheck, AlertTriangle } from 'lucide-react';
+import { CheckSquare, Square, Sparkles, BookOpen, Search, Brain, AlertTriangle, UserCheck, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 interface CheckItem {
@@ -36,7 +36,7 @@ const VERIFICATION_STEPS: CheckItem[] = [
     title: '2. Verify Facts, Formulas & Dates',
     coreQuestion: 'Have you checked specific dates, formulas, numbers, and scientific units?',
     explanation: 'AI can suffer from "hallucination"—generating plausible-sounding but completely incorrect numbers, historical treaty years, or chemical valencies.',
-    schoolExample: 'Example: AI might write $P = V/I$ instead of $P = V \\times I$ or swap the year of the Treaty of Vienna.',
+    schoolExample: 'Example: AI might write P = V/I instead of P = V × I or swap the year of the Treaty of Vienna.',
     actionTip: 'Never copy numerical constants, trigonometric identities, or historical years without double-checking them in your notebook.'
   },
   {
@@ -96,16 +96,16 @@ export function VerificationChecklist() {
   return (
     <div className="space-y-8">
       {/* Interactive Progress Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <h2 className="text-base font-bold text-[#1f4e79] font-display flex items-center gap-2">
               <span>Interactive Verification Checklist</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#2fa8cc]/15 text-[#1f4e79] font-bold border border-[#2fa8cc]/30">
                 {checkedIds.length} / {VERIFICATION_STEPS.length} Completed
               </span>
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#5a6b7b] mt-0.5">
               Practice reviewing an AI answer you received before writing it in your notebook.
             </p>
           </div>
@@ -113,26 +113,28 @@ export function VerificationChecklist() {
           <button
             type="button"
             onClick={checkAll}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors"
+            className="text-xs font-bold px-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-[#fafbfc] hover:bg-[#e8f6fa] text-[#1f4e79] transition-colors cursor-pointer"
           >
             {checkedIds.length === VERIFICATION_STEPS.length ? 'Reset Checklist' : 'Select All 5 Steps'}
           </button>
         </div>
 
         {/* Progress meter */}
-        <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="w-full h-2.5 bg-[#f5f8fa] border border-[#e2e8f0] rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 rounded-full ${
-              progress === 100 ? 'bg-emerald-500' : 'bg-indigo-600'
+              progress === 100
+                ? 'bg-emerald-500'
+                : 'bg-gradient-to-r from-[#2fa8cc] to-[#1f4e79]'
             }`}
             style={{ width: `${progress}%` }}
           />
         </div>
 
         {progress === 100 && (
-          <div className="mt-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+          <div className="mt-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
             <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Excellent habit! You are using AI as an active study partner, not an answer generator.</span>
+            <span>Excellent habit! You are using AI as an active study mentor, not an answer generator.</span>
           </div>
         )}
       </div>
@@ -141,7 +143,6 @@ export function VerificationChecklist() {
       <div className="space-y-4">
         {VERIFICATION_STEPS.map((step) => {
           const isChecked = checkedIds.includes(step.id);
-          const Icon = step.lucideIcon;
 
           return (
             <div
@@ -149,8 +150,8 @@ export function VerificationChecklist() {
               onClick={() => toggleCheck(step.id)}
               className={`cursor-pointer rounded-2xl border transition-all duration-200 p-5 sm:p-6 ${
                 isChecked
-                  ? 'bg-emerald-50/40 border-emerald-300 shadow-xs'
-                  : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
+                  ? 'bg-[#e8f6fa]/60 border-[#2fa8cc] shadow-xs'
+                  : 'bg-white border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:shadow-xs'
               }`}
             >
               <div className="flex items-start gap-4">
@@ -161,46 +162,46 @@ export function VerificationChecklist() {
                     e.stopPropagation();
                     toggleCheck(step.id);
                   }}
-                  className="mt-0.5 text-slate-400 hover:text-indigo-600 focus:outline-hidden"
+                  className="mt-0.5 text-slate-400 hover:text-[#2fa8cc] focus:outline-hidden cursor-pointer"
                   aria-label={`Toggle ${step.title}`}
                 >
                   {isChecked ? (
-                    <CheckSquare className="w-6 h-6 text-emerald-600" />
+                    <CheckSquare className="w-6 h-6 text-[#2fa8cc]" />
                   ) : (
                     <Square className="w-6 h-6 text-slate-300" />
                   )}
                 </button>
 
-                <div className="flex-1 space-y-2">
+                <div className="flex-1 space-y-2.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xl">{step.icon}</span>
-                    <h3 className={`text-base font-bold ${isChecked ? 'text-emerald-950 line-through decoration-emerald-500/50' : 'text-slate-900'}`}>
+                    <h3 className={`text-base font-bold font-display ${isChecked ? 'text-[#1f4e79] line-through decoration-[#2fa8cc]/60' : 'text-[#1f4e79]'}`}>
                       {step.title}
                     </h3>
                   </div>
 
-                  <p className="text-sm font-semibold text-indigo-900 bg-indigo-50/80 p-2.5 rounded-lg border border-indigo-100/80">
+                  <p className="text-sm font-semibold text-[#1f4e79] bg-[#fafbfc] p-3 rounded-xl border border-[#e2e8f0]">
                     ❓ {step.coreQuestion}
                   </p>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-[#5a6b7b] leading-relaxed">
                     {step.explanation}
                   </p>
 
                   {/* School Example & Action Tip */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-2 text-xs">
-                    <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80">
-                      <span className="font-semibold text-slate-700 block mb-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs">
+                    <div className="p-3.5 rounded-xl bg-[#fafbfc] border border-[#e2e8f0]">
+                      <span className="font-bold text-[#1f4e79] block mb-1">
                         🏫 Classroom Example:
                       </span>
-                      <span className="text-slate-600">{step.schoolExample}</span>
+                      <span className="text-[#5a6b7b] leading-relaxed">{step.schoolExample}</span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-amber-50/60 border border-amber-200/80">
-                      <span className="font-semibold text-amber-900 block mb-1">
+                    <div className="p-3.5 rounded-xl bg-[#fff8ea] border border-[#c9a227]/30">
+                      <span className="font-bold text-amber-950 block mb-1">
                         💡 Student Action Tip:
                       </span>
-                      <span className="text-amber-800">{step.actionTip}</span>
+                      <span className="text-amber-900 leading-relaxed">{step.actionTip}</span>
                     </div>
                   </div>
                 </div>
@@ -210,28 +211,28 @@ export function VerificationChecklist() {
         })}
       </div>
 
-      {/* Bottom Educational Callout */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950 p-6 sm:p-8 text-white shadow-md text-center space-y-3">
-        <span className="text-2xl">🌱</span>
-        <blockquote className="text-lg sm:text-xl font-bold tracking-tight text-white max-w-2xl mx-auto">
-          &ldquo;AI should help you learn — not replace your thinking.&rdquo;
+      {/* Bottom Educational Callout — PPES Navy Container */}
+      <div className="rounded-2xl bg-[#0d1f35] p-7 sm:p-10 text-white shadow-xl text-center space-y-4 border border-white/10">
+        <span className="text-3xl">🌱</span>
+        <blockquote className="text-lg sm:text-xl font-bold tracking-tight text-white max-w-2xl mx-auto font-display">
+          &ldquo;Syllabus remained the same, learning pattern changed.&rdquo;
         </blockquote>
-        <p className="text-xs text-indigo-200 max-w-xl mx-auto leading-relaxed">
-          The best students use AI to test their understanding, ask questions, and explore ideas—then verify everything using their own intellect and textbook.
+        <p className="text-xs sm:text-sm text-white/70 max-w-xl mx-auto leading-relaxed">
+          The best students use AI to test their understanding, ask clarifying questions, and explore ideas—then verify everything using their own intellect and official textbook.
         </p>
 
-        <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
+        <div className="pt-3 flex flex-wrap items-center justify-center gap-3.5">
           <Link
             href="/prompt-builder"
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-xs text-white shadow-sm transition-all active:scale-95"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff6b00] to-orange-600 font-bold text-xs sm:text-sm text-white shadow-lg shadow-[#ff6b00]/25 hover:shadow-[#ff6b00]/40 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            Build a Verified Prompt Now →
+            <span>Build a Verified Prompt Now →</span>
           </Link>
           <Link
             href="/which-ai"
-            className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-xs text-white border border-white/20 transition-all"
+            className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 font-semibold text-xs sm:text-sm text-white border border-white/20 transition-all"
           >
-            Explore AI Capabilities →
+            <span>Explore AI Capabilities</span>
           </Link>
         </div>
       </div>

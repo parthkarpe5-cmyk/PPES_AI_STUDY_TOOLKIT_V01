@@ -10,7 +10,7 @@ interface PromptResultCardProps {
   onEditAgain?: () => void;
 }
 
-export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps) {
+export function PromptResultCard({ result }: PromptResultCardProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'prompt' | 'why'>('prompt');
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -39,33 +39,33 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all duration-200 animate-in fade-in-50">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800 p-5 text-white">
+    <div className="bg-white rounded-2xl border border-[#e2e8f0] shadow-sm overflow-hidden transition-all duration-200 animate-in fade-in-50">
+      {/* Header Banner - PPES Academic Deep Blue */}
+      <div className="bg-gradient-to-r from-[#0d1f35] via-[#1f4e79] to-[#0d1f35] p-5 text-white border-b border-white/10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-xs flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-amber-300" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-xs flex items-center justify-center ring-1 ring-white/15">
+              <Sparkles className="w-4 h-4 text-[#f0d074]" />
             </div>
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-indigo-200">
-                Generated High-Quality Prompt
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#2fa8cc]">
+                Generated High-Yield Prompt
               </span>
-              <h2 className="text-lg font-bold text-white leading-tight">
+              <h2 className="text-lg font-bold text-white leading-tight font-display">
                 {result.meta.topic} • Class {result.meta.classLevel} {result.meta.subjectName}
               </h2>
             </div>
           </div>
 
-          {/* Copy CTA Button */}
+          {/* Copy CTA Button - PPES Saffron Action */}
           <button
             type="button"
             onClick={handleCopy}
             id="copy-prompt-btn"
-            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm active:scale-95 ${
+            className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-md active:scale-95 cursor-pointer ${
               copied
-                ? 'bg-emerald-500 text-white shadow-emerald-700/20'
-                : 'bg-white text-indigo-700 hover:bg-indigo-50 hover:shadow-md'
+                ? 'bg-emerald-600 text-white shadow-emerald-700/20'
+                : 'bg-gradient-to-r from-[#ff6b00] to-orange-600 text-white shadow-[#ff6b00]/25 hover:shadow-[#ff6b00]/40 hover:scale-105'
             }`}
             aria-label="Copy Generated Prompt"
           >
@@ -88,10 +88,10 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
           <button
             type="button"
             onClick={() => setActiveTab('prompt')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'prompt'
-                ? 'bg-white text-indigo-900 shadow-xs'
-                : 'text-indigo-100 hover:bg-white/10'
+                ? 'bg-white text-[#1f4e79] shadow-xs'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
             }`}
           >
             📄 Complete Prompt
@@ -99,13 +99,13 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
           <button
             type="button"
             onClick={() => setActiveTab('why')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'why'
-                ? 'bg-white text-indigo-900 shadow-xs'
-                : 'text-indigo-100 hover:bg-white/10'
+                ? 'bg-white text-[#1f4e79] shadow-xs'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <HelpCircle className="w-3.5 h-3.5" />
+            <HelpCircle className="w-3.5 h-3.5 text-[#2fa8cc]" />
             <span>Why this prompt works ({result.breakdown.length} components)</span>
           </button>
         </div>
@@ -115,11 +115,11 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
       {activeTab === 'prompt' && (
         <div className="p-5 sm:p-6 space-y-5">
           <div className="relative">
-            <div className="bg-slate-900 text-slate-100 rounded-xl p-4 sm:p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap border border-slate-800 selection:bg-indigo-500 selection:text-white">
+            <div className="bg-[#0d1f35] text-slate-100 rounded-xl p-4 sm:p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap border border-white/10 selection:bg-[#ff6b00] selection:text-white">
               {result.fullPrompt}
             </div>
             {copied && (
-              <div className="absolute top-3 right-3 bg-emerald-600 text-white text-xs px-3 py-1 rounded-md shadow-md flex items-center gap-1.5 animate-in fade-in zoom-in duration-150">
+              <div className="absolute top-3 right-3 bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 animate-in fade-in zoom-in duration-150 font-semibold">
                 <Check className="w-3.5 h-3.5" />
                 <span>Ready to paste in your AI tool!</span>
               </div>
@@ -127,14 +127,14 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
           </div>
 
           {/* Quick Launch Recommendations */}
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div className="bg-[#fafbfc] border border-[#e2e8f0] rounded-xl p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <span>🚀</span> Ready to use? Open an AI tool & paste (Ctrl+V or Cmd+V)
+              <span className="text-xs font-bold text-[#1f4e79] uppercase tracking-wider flex items-center gap-1.5 font-display">
+                <span>🚀</span> Ready to use? Open an AI tool & paste (Ctrl+V / Cmd+V)
               </span>
               <Link
                 href="/which-ai"
-                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                className="text-xs font-semibold text-[#2fa8cc] hover:text-[#1f4e79] flex items-center gap-1"
               >
                 Not sure which AI to open? Check guidance →
               </Link>
@@ -144,68 +144,68 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
               <button
                 type="button"
                 onClick={() => copyAndOpen('https://chatgpt.com')}
-                className="p-2.5 rounded-lg border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-left transition-all text-xs font-medium text-slate-800 flex items-center justify-between group"
+                className="p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-[#2fa8cc] hover:bg-[#e8f6fa]/50 text-left transition-all text-xs font-medium text-[#1a1a1a] flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex flex-col">
-                  <span className="font-semibold text-slate-900">ChatGPT</span>
-                  <span className="text-[10px] text-slate-500">General Learning</span>
+                  <span className="font-bold text-[#1f4e79]">ChatGPT</span>
+                  <span className="text-[10px] text-[#5a6b7b]">General Learning</span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2fa8cc]" />
               </button>
 
               <button
                 type="button"
                 onClick={() => copyAndOpen('https://gemini.google.com')}
-                className="p-2.5 rounded-lg border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-left transition-all text-xs font-medium text-slate-800 flex items-center justify-between group"
+                className="p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-[#2fa8cc] hover:bg-[#e8f6fa]/50 text-left transition-all text-xs font-medium text-[#1a1a1a] flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex flex-col">
-                  <span className="font-semibold text-slate-900">Gemini</span>
-                  <span className="text-[10px] text-slate-500">Research & Vision</span>
+                  <span className="font-bold text-[#1f4e79]">Gemini</span>
+                  <span className="text-[10px] text-[#5a6b7b]">Research & Vision</span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2fa8cc]" />
               </button>
 
               <button
                 type="button"
                 onClick={() => copyAndOpen('https://claude.ai')}
-                className="p-2.5 rounded-lg border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-left transition-all text-xs font-medium text-slate-800 flex items-center justify-between group"
+                className="p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-[#2fa8cc] hover:bg-[#e8f6fa]/50 text-left transition-all text-xs font-medium text-[#1a1a1a] flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex flex-col">
-                  <span className="font-semibold text-slate-900">Claude</span>
-                  <span className="text-[10px] text-slate-500">Structured Notes</span>
+                  <span className="font-bold text-[#1f4e79]">Claude</span>
+                  <span className="text-[10px] text-[#5a6b7b]">Structured Notes</span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2fa8cc]" />
               </button>
 
               <button
                 type="button"
                 onClick={() => copyAndOpen('https://notebooklm.google.com')}
-                className="p-2.5 rounded-lg border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 text-left transition-all text-xs font-medium text-slate-800 flex items-center justify-between group"
+                className="p-2.5 rounded-xl border border-[#e2e8f0] bg-white hover:border-[#2fa8cc] hover:bg-[#e8f6fa]/50 text-left transition-all text-xs font-medium text-[#1a1a1a] flex items-center justify-between group cursor-pointer"
               >
                 <div className="flex flex-col">
-                  <span className="font-semibold text-slate-900">NotebookLM</span>
-                  <span className="text-[10px] text-slate-500">From Your PDF</span>
+                  <span className="font-bold text-[#1f4e79]">NotebookLM</span>
+                  <span className="text-[10px] text-[#5a6b7b]">From Your PDF</span>
                 </div>
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" />
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2fa8cc]" />
               </button>
             </div>
           </div>
 
           {/* Verification Reminder Bar */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <div className="bg-[#fff9f0] border border-[#ff6b00]/30 rounded-xl p-4 flex items-start gap-3">
             <span className="text-xl">⚠️</span>
             <div className="space-y-1">
-              <h4 className="text-xs font-bold text-amber-900 uppercase tracking-wide">
+              <h4 className="text-xs font-bold text-amber-950 uppercase tracking-wide">
                 Next Step: Never blindly copy AI answers!
               </h4>
-              <p className="text-xs text-amber-800 leading-relaxed">
-                After you get the answer from AI, use our 5-step verification checklist to cross-check formulas, definitions, and facts against your textbook.
+              <p className="text-xs text-amber-900 leading-relaxed">
+                After you receive the explanation from AI, use our 5-step verification checklist to cross-check formulas, definitions, and facts against your textbook.
               </p>
               <Link
                 href="/verify"
-                className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 hover:underline pt-1"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#ff6b00] hover:underline pt-1"
               >
-                Open Check My Answer Checklist <ArrowRight className="w-3 h-3" />
+                Open Check My Answer Checklist <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
@@ -215,11 +215,11 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
       {/* Tab 2: Why This Prompt Works (Educational Breakdown) */}
       {activeTab === 'why' && (
         <div className="p-5 sm:p-6 space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-bold text-slate-900">
+          <div className="border-b border-[#e2e8f0] pb-3">
+            <h3 className="text-base font-bold text-[#1f4e79] font-display">
               The Architecture of an Effective Prompt
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#5a6b7b] mt-0.5">
               High-performing prompts aren&apos;t magic—they are structured instructions with 6 key ingredients.
             </p>
           </div>
@@ -230,23 +230,23 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
               return (
                 <div
                   key={item.key}
-                  className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/60 transition-colors hover:bg-slate-50"
+                  className="border border-[#e2e8f0] rounded-xl overflow-hidden bg-[#fafbfc] transition-colors hover:bg-[#f5f8fa]"
                 >
                   <button
                     type="button"
                     onClick={() => setExpandedItem(isExpanded ? null : item.key)}
-                    className="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 focus:outline-hidden"
+                    className="w-full p-3.5 sm:p-4 text-left flex items-center justify-between gap-3 focus:outline-hidden cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-xl shrink-0">{item.icon}</span>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 uppercase">
+                          <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#2fa8cc]/15 text-[#1f4e79] border border-[#2fa8cc]/30 uppercase">
                             {item.name}
                           </span>
-                          <span className="text-xs font-bold text-slate-900">{item.title}</span>
+                          <span className="text-xs font-bold text-[#1f4e79]">{item.title}</span>
                         </div>
-                        <p className="text-xs text-slate-600 mt-1">{item.whyItWorks}</p>
+                        <p className="text-xs text-[#5a6b7b] mt-1">{item.whyItWorks}</p>
                       </div>
                     </div>
                     <div className="text-slate-400 shrink-0">
@@ -255,11 +255,11 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
                   </button>
 
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-1 border-t border-slate-200/80 bg-white space-y-2 text-xs">
-                      <span className="font-semibold text-slate-700 block">
+                    <div className="px-4 pb-4 pt-1 border-t border-[#e2e8f0] bg-white space-y-2 text-xs">
+                      <span className="font-semibold text-[#1a1a1a] block">
                         Included in your prompt as:
                       </span>
-                      <div className="p-2.5 rounded-lg bg-slate-100 font-mono text-[11px] text-slate-800 border border-slate-200">
+                      <div className="p-2.5 rounded-lg bg-[#fafbfc] font-mono text-[11px] text-[#1a1a1a] border border-[#e2e8f0]">
                         {item.extractedSnippet}
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export function PromptResultCard({ result, onEditAgain }: PromptResultCardProps)
             <button
               type="button"
               onClick={() => setActiveTab('prompt')}
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+              className="text-xs font-bold text-[#2fa8cc] hover:text-[#1f4e79] flex items-center gap-1 cursor-pointer"
             >
               Back to complete prompt view <ArrowRight className="w-3.5 h-3.5" />
             </button>

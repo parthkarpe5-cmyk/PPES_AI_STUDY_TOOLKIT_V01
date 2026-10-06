@@ -1,79 +1,146 @@
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, ShieldCheck, Heart } from 'lucide-react';
+import { ShieldCheck, MapPin, Mail, ExternalLink, GraduationCap } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <footer className="bg-[#0d1f35] text-white border-t border-white/10 mt-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-10 mb-12">
           {/* Brand and Mission */}
-          <div className="md:col-span-2 space-y-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                <Sparkles className="w-4 h-4" />
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#2fa8cc] to-[#1f4e79] flex items-center justify-center text-white ring-2 ring-white/15">
+                <GraduationCap className="w-5 h-5" />
               </div>
-              <span className="font-bold text-white text-lg tracking-tight">
-                Prarambh <span className="text-indigo-400">Path</span>
-              </span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-bold text-white text-lg tracking-tight font-display">
+                  Prarambha Path
+                </span>
+                <span className="text-[11px] font-medium text-white/50 tracking-wider">
+                  Evening School • Savardhat, Goa
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-slate-400 max-w-md leading-relaxed">
-              An AI literacy & study toolkit dedicated to school students in Classes 8–10. We teach you how to choose the right AI, build structured prompts, and verify answers with confidence.
+
+            <p className="text-sm text-white/70 max-w-md leading-relaxed">
+              Inspired by the Gurukul tradition, Prarambh Path’s AI Study Toolkit teaches students in Classes 8–10 to use AI as an interactive study mentor rather than an answer machine.
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-indigo-300 text-xs font-medium border border-slate-700">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Philosophy: <strong>Choose. Ask. Check. Learn.</strong></span>
+
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c9a227]/10 text-[#f0d074] text-xs font-semibold border border-[#c9a227]/25">
+              <ShieldCheck className="w-4 h-4 text-[#c9a227]" />
+              <span>Core Philosophy: <strong>Choose. Ask. Check. Learn.</strong></span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#c9a227] mb-4 font-display">
               Toolkit Modules
             </h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="flex flex-col gap-2.5 text-sm">
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
-                  Home & Overview
+                <Link href="/" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
+                  <span>Overview & Guide</span>
                 </Link>
               </li>
               <li>
-                <Link href="/which-ai" className="hover:text-white transition-colors">
-                  🎯 Which AI for My Task?
+                <Link href="/which-ai" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
+                  <span>Step 1: Which AI for My Task?</span>
                 </Link>
               </li>
               <li>
-                <Link href="/prompt-builder" className="hover:text-white transition-colors">
-                  💬 Guided Prompt Builder
+                <Link href="/prompt-builder" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
+                  <span>Step 2: Guided Prompt Builder</span>
                 </Link>
               </li>
               <li>
-                <Link href="/verify" className="hover:text-white transition-colors">
-                  ✅ Check & Verify Answers
+                <Link href="/verify" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
+                  <span>Step 3: Check & Verify Answers</span>
                 </Link>
+              </li>
+              <li className="pt-1">
+                <a
+                  href="https://www.prarambhapath.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1.5 text-xs text-[#2fa8cc] hover:text-white transition-colors"
+                >
+                  <span>Visit Main PPES Website</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
               </li>
             </ul>
           </div>
 
-          {/* Responsible AI Notice */}
+          {/* Contact & Initiative */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">
-              Responsible AI Promise
+            <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#c9a227] mb-4 font-display">
+              PPES Community
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              This toolkit works 100% locally in your browser. No login, no personal data collection, and no homework shortcuts. AI is here to strengthen your understanding, not replace your thinking.
-            </p>
+            <ul className="flex flex-col gap-3 text-sm">
+              <li className="flex items-start gap-2.5">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#2fa8cc]/15 mt-0.5">
+                  <MapPin className="h-3.5 w-3.5 text-[#2fa8cc]" />
+                </div>
+                <span className="text-xs text-white/60 leading-relaxed">
+                  Savardhat Village, Bicholim Taluka, Goa
+                </span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#2fa8cc]/15 mt-0.5">
+                  <Mail className="h-3.5 w-3.5 text-[#2fa8cc]" />
+                </div>
+                <a
+                  href="mailto:prarambhpath4444@gmail.com"
+                  className="text-xs text-white/60 hover:text-[#c9a227] transition-colors leading-relaxed"
+                >
+                  prarambhpath4444@gmail.com
+                </a>
+              </li>
+              <li className="pt-2">
+                <div className="flex items-center gap-3">
+                  <a
+                    href="https://youtube.com/@prarambhapath?si=wQcjubXc9SCucgBF"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="PPES YouTube Channel"
+                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-[#c9a227] transition-colors text-xs"
+                  >
+                    YouTube
+                  </a>
+                  <a
+                    href="https://www.instagram.com/prarambha_path"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="PPES Instagram Profile"
+                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-[#c9a227] transition-colors text-xs"
+                  >
+                    Instagram
+                  </a>
+                  <a
+                    href="https://open.spotify.com/show/20Ah469M6xBubEMBiBZt3Y?si=lYsRyCnkQF6D5QFA04briA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="PPES Student Podcast"
+                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-[#c9a227] transition-colors text-xs"
+                  >
+                    Spotify
+                  </a>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Prarambh Path. Built for Class 8–10 School Students.</p>
-          <div className="flex items-center gap-1 text-slate-400">
-            <span>Built with educational care</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
-            <span>for curious learners</span>
-          </div>
+        <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+          <p>© {new Date().getFullYear()} Prarambha Path Evening School. All rights reserved.</p>
+          <p className="text-white/40">A student-led initiative from Savardhat, Goa • Free for every learner</p>
         </div>
       </div>
     </footer>
