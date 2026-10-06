@@ -94,17 +94,17 @@ export function PromptResultCard({ result }: PromptResultCardProps) {
   return (
     <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-sm overflow-hidden transition-all duration-200 animate-in fade-in-50 space-y-0">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#0d1f35] via-[#1f4e79] to-[#0d1f35] p-5 sm:p-6 text-white border-b border-white/10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#0d1f35] via-[#1f4e79] to-[#0d1f35] p-4 sm:p-6 text-white border-b border-white/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-xs flex items-center justify-center ring-1 ring-white/15">
-              <Sparkles className="w-5 h-5 text-[#f0d074]" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/10 backdrop-blur-xs flex items-center justify-center ring-1 ring-white/15 shrink-0">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#f0d074]" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2fa8cc]">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#2fa8cc]">
                 Curriculum-Grounded Study Prompt
               </span>
-              <h2 className="text-lg sm:text-xl font-bold text-white font-display leading-tight">
+              <h2 className="text-base sm:text-xl font-bold text-white font-display leading-tight">
                 {result.meta.topic} • Class {result.meta.classLevel} {result.meta.subjectName}
               </h2>
             </div>
@@ -115,7 +115,7 @@ export function PromptResultCard({ result }: PromptResultCardProps) {
             type="button"
             onClick={handleCopy}
             id="copy-prompt-btn"
-            className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 shadow-md active:scale-95 cursor-pointer shrink-0 ${
+            className={`inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-200 shadow-md active:scale-95 cursor-pointer shrink-0 min-h-[44px] ${
               copied
                 ? 'bg-emerald-600 text-white shadow-emerald-700/20'
                 : 'bg-gradient-to-r from-[#ff6b00] to-orange-600 text-white shadow-[#ff6b00]/25 hover:shadow-[#ff6b00]/40 hover:scale-105'
@@ -143,15 +143,15 @@ export function PromptResultCard({ result }: PromptResultCardProps) {
       </div>
 
       {/* Main Prompt Box */}
-      <div className="p-5 sm:p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div className="relative">
-          <div className="bg-[#0d1f35] text-slate-100 rounded-2xl p-4 sm:p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap border border-white/10 selection:bg-[#ff6b00] selection:text-white max-h-96">
+          <div className="bg-[#0d1f35] text-slate-100 rounded-2xl p-3.5 sm:p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap border border-white/10 selection:bg-[#ff6b00] selection:text-white max-h-80 sm:max-h-96">
             {result.fullPrompt}
           </div>
           {copied && (
-            <div className="absolute top-3 right-3 bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1.5 animate-in fade-in zoom-in duration-150 font-semibold">
+            <div className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[11px] sm:text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1.5 animate-in fade-in zoom-in duration-150 font-semibold">
               <Check className="w-3.5 h-3.5" />
-              <span>Copied! Ready to paste (Ctrl+V / Cmd+V)</span>
+              <span>Copied! Ready to paste</span>
             </div>
           )}
         </div>
