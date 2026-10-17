@@ -226,6 +226,79 @@ export const STUDY_GOALS: GoalOption[] = [
       'A closing "Thank You + Q&A" slide'
     ],
     sampleQuestionClosing: 'Suggest one engaging opening line the presenter could use to start the presentation confidently.'
+  },
+  // ─── BUILD goals — each has its own explicit task identity ────────────────
+  {
+    id: 'code',
+    label: 'Write code',
+    icon: '⌨️',
+    description: 'Write clean, beginner-friendly, well-commented code with step-by-step logic.',
+    taskInstruction: 'Write beginner-friendly, clean, well-commented code for this concept or task. Keep the logic appropriate for a school student, explain key functions, and include sample input/output.',
+    outputStructure: [
+      'Overview of what the program accomplishes and algorithm logic',
+      'Full commented source code with beginner-friendly variable names',
+      'Sample inputs and expected output test cases',
+      'Common beginner syntax pitfalls to avoid'
+    ],
+    sampleQuestionClosing: 'Suggest one simple challenge to extend or modify this code.'
+  },
+  {
+    id: 'debug',
+    label: 'Debug my code',
+    icon: '🐛',
+    description: 'Diagnose programming errors, explain the root cause, and provide the fix.',
+    taskInstruction: 'Help me debug this code or programming error. Identify the exact root cause of the error, explain why it happened in simple terms, provide the corrected code snippet, and teach me how to prevent it in the future.',
+    outputStructure: [
+      'Identified bug or error diagnosis (Syntax / Logic / Runtime)',
+      'Explanation of why this error happens in beginner terms',
+      'Corrected code block with changed lines highlighted',
+      'Quick debugging tip / checklist for school exams and practicals'
+    ],
+    sampleQuestionClosing: 'Ask me to verify if the corrected code runs without errors on my computer.'
+  },
+  {
+    id: 'explain-code',
+    label: 'Explain code',
+    icon: '📖',
+    description: 'Line-by-line explanation of code in simple student language without complex jargon.',
+    taskInstruction: 'Walk through this code step-by-step in clear, student-friendly language. Explain the role of each variable, control structure (loops, conditionals), and function without confusing jargon.',
+    outputStructure: [
+      'High-level purpose of the code in 1-2 plain English sentences',
+      'Step-by-step line-by-line breakdown of how the execution flows',
+      'Key programming concepts demonstrated (variables, data types, loops, conditions)',
+      'Dry-run trace table showing how variable values change'
+    ],
+    sampleQuestionClosing: 'Ask me what would happen if one specific line in the code were changed.'
+  },
+  {
+    id: 'project-idea',
+    label: 'Project idea',
+    icon: '💡',
+    description: 'Feasible school science exhibition or tech project ideas with realistic materials.',
+    taskInstruction: 'Brainstorm creative, feasible school science or technology project ideas related to this topic. Ensure the materials are accessible, safe, and realistic for a Class 8–10 student within a modest budget.',
+    outputStructure: [
+      'Core project title and catchy exhibit tagline',
+      'Scientific or technological principle demonstrated',
+      'Required low-cost, readily available materials list',
+      'Step-by-step construction methodology',
+      'Expected outcome, working demonstration tips, and exhibit presentation advice'
+    ],
+    sampleQuestionClosing: 'Suggest 2 safety precautions students must follow while building this project.'
+  },
+  {
+    id: 'project-structure',
+    label: 'Project structure',
+    icon: '📁',
+    description: 'Structured project roadmap with timeline, milestones, and report outline.',
+    taskInstruction: 'Provide a structured, step-by-step execution roadmap and project report framework for a school project on this topic. Outline the milestones, research phases, practical steps, and presentation structure.',
+    outputStructure: [
+      'Project objective and hypothesis / problem statement',
+      'Phase 1: Background research and planning (Week 1)',
+      'Phase 2: Experimentation / Prototype building (Week 2)',
+      'Phase 3: Observation, data recording and analysis (Week 3)',
+      'Project report table of contents & chart display guidelines'
+    ],
+    sampleQuestionClosing: 'Provide a checklist of 4 key items the school project report must include.'
   }
 ];
 

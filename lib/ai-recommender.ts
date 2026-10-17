@@ -1,5 +1,5 @@
-import { AI_TOOLS, AITool } from '@/data/ai-tools';
-import { STUDY_TASKS, TaskOption } from '@/data/tasks';
+import { AI_TOOLS, type AITool } from '../data/ai-tools.ts';
+import { STUDY_TASKS, type TaskOption } from '../data/tasks.ts';
 
 export interface RecommendationResult {
   task: TaskOption;

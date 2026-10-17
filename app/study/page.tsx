@@ -2,9 +2,8 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { SinglePageBuilder } from '@/components/SinglePageBuilder';
-import { Sparkles, ArrowLeft, ShieldAlert } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 function StudyPageContent() {
   const searchParams = useSearchParams();

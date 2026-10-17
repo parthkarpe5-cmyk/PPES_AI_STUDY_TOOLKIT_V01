@@ -101,7 +101,7 @@ export const STUDY_TASKS: TaskOption[] = [
     recommendedToolIds: ['copilot', 'chatgpt', 'claude'],
     reason: 'These tools can pinpoint the exact line number of a syntax error and explain the logic in beginner-friendly terms.',
     caution: 'Try writing the code yourself first. Never submit code you cannot explain line-by-line.',
-    suggestedPromptGoal: 'solve-problem',
+    suggestedPromptGoal: 'code',
     exampleScenario: 'e.g., Debugging a Python `for` loop or building a simple HTML portfolio page.'
   },
   {
@@ -140,7 +140,7 @@ export const STUDY_TASKS: TaskOption[] = [
     recommendedToolIds: ['chatgpt', 'gemini'],
     reason: 'Useful for structuring how a school science exhibition chart or history timeline poster should look.',
     caution: 'School projects evaluate your own creativity and effort. Use AI purely as a brainstorming helper.',
-    suggestedPromptGoal: 'understand-topic',
+    suggestedPromptGoal: 'create-poster',
     exampleScenario: 'e.g., Planning a chart layout for "Water Conservation Techniques" exhibition.'
   },
   {

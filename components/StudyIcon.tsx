@@ -38,7 +38,6 @@ import {
   TrendingUp,
   Bot,
   UserCheck,
-  GraduationCap,
   Scale,
   Zap,
   Bookmark

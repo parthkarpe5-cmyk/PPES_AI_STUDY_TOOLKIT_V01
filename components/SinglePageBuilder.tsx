@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import {
-  Sparkles, ArrowRight, RotateCcw, Search,
+  Sparkles, RotateCcw, Search,
   ChevronDown, ShieldAlert, Check, Copy, ExternalLink, Bot
 } from 'lucide-react';
 import { SUBJECTS, CLASS_LEVELS } from '@/data/subjects';
@@ -167,16 +167,18 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
 
   const [state, setState] = useState<BuilderState>(() => {
     const profile = typeof window !== 'undefined' ? getStoredProfile() : { classLevel: '10' as ClassLevel, board: 'cbse' as BoardType };
+    const initCat = initialCapabilityId ? CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId) : undefined;
+    const initSub = initCat && initialSubCapabilityId ? initCat.subs.find(s => s.id === initialSubCapabilityId) : undefined;
     return {
       classLevel: profile.classLevel,
       board: profile.board,
       subjectId: '',
       chapterId: '',
       topic: '',
-      capabilityId: '',
-      subCapabilityId: '',
-      goalId: '',
-      styleId: 'simple',
+      capabilityId: initCat?.id || '',
+      subCapabilityId: initSub?.id || '',
+      goalId: initSub?.goalId || initCat?.defaultGoalId || '',
+      styleId: initSub?.styleId || 'simple',
       examFocus: true,
     };
   });
@@ -188,23 +190,38 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [copiedSticky, setCopiedSticky] = useState(false);
 
-  // Sync from homepage capability gallery
+  // Sync capability when props change from external navigation
+  const currentCapKey = `${initialCapabilityId || ''}:${initialSubCapabilityId || ''}`;
+  const [prevCapKey, setPrevCapKey] = useState(currentCapKey);
+
+  if (currentCapKey !== prevCapKey) {
+    setPrevCapKey(currentCapKey);
+    if (initialCapabilityId) {
+      const cat = CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId);
+      if (cat) {
+        const sub = initialSubCapabilityId
+          ? cat.subs.find(s => s.id === initialSubCapabilityId)
+          : undefined;
+        setState(prev => ({
+          ...prev,
+          capabilityId: initialCapabilityId,
+          subCapabilityId: sub?.id || '',
+          goalId: sub?.goalId || cat.defaultGoalId,
+          styleId: sub?.styleId || 'simple',
+        }));
+        setResult(null);
+      }
+    }
+  }
+
+  // Listen to profile change events from modal
   useEffect(() => {
-    if (!initialCapabilityId) return;
-    const cat = CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId);
-    if (!cat) return;
-    const sub = initialSubCapabilityId
-      ? cat.subs.find(s => s.id === initialSubCapabilityId)
-      : undefined;
-    setState(prev => ({
-      ...prev,
-      capabilityId: initialCapabilityId,
-      subCapabilityId: sub?.id || '',
-      goalId: sub?.goalId || cat.defaultGoalId,
-      styleId: sub?.styleId || 'simple',
-    }));
-    setResult(null);
-  }, [initialCapabilityId, initialSubCapabilityId]);
+    const handleProfileChange = () => {
+      const p = getStoredProfile();
+      setState(prev => ({ ...prev, classLevel: p.classLevel, board: p.board }));
+    };
+    window.addEventListener('ppptk_profile_changed', handleProfileChange);
+  }, []);
 
   // Derived values
   const currSubjects = getCurriculumSubjects(state.classLevel, state.board);
@@ -379,6 +396,11 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                 </Chip>
               ))}
             </div>
+            {state.board !== 'cbse' && (
+              <p className="text-[11px] text-[#5a6b7b] mt-2 italic">
+                ℹ️ Standard NCERT benchmark syllabus shown. You can pick any chapter below or enter your exact school topic in Step 5.
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -530,14 +552,15 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                     aria-pressed={state.topic === t && !customTopic.trim()}
                     onClick={() => { update('topic', t); setCustomTopic(''); }}
                     className={`
-                      px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer min-h-[36px]
+                      px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center
+                      focus-visible:outline-2 focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-1
                       ${state.topic === t && !customTopic.trim()
-                        ? 'bg-[#1f4e79] text-white border-[#1f4e79]'
+                        ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
                         : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc] hover:bg-[#e8f6fa]'
                       }
                     `}
                   >
-                    {state.topic === t && !customTopic.trim() && <span className="mr-1">✓</span>}
+                    {state.topic === t && !customTopic.trim() && <span className="mr-1.5 font-bold">✓</span>}
                     {t}
                   </button>
                 ))}
@@ -559,14 +582,15 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                     aria-pressed={state.topic === t && !customTopic.trim()}
                     onClick={() => { update('topic', t); setCustomTopic(''); }}
                     className={`
-                      px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer min-h-[36px]
+                      px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center
+                      focus-visible:outline-2 focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-1
                       ${state.topic === t && !customTopic.trim()
-                        ? 'bg-[#1f4e79] text-white border-[#1f4e79]'
+                        ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
                         : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc] hover:bg-[#e8f6fa]'
                       }
                     `}
                   >
-                    {state.topic === t && !customTopic.trim() && <span className="mr-1">✓</span>}
+                    {state.topic === t && !customTopic.trim() && <span className="mr-1.5 font-bold">✓</span>}
                     {t}
                   </button>
                 ))}
@@ -704,9 +728,9 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                 type="button"
                 aria-pressed={state.styleId === st.id}
                 onClick={() => update('styleId', st.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer min-h-[36px] ${
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center focus-visible:outline-2 focus-visible:outline-[#2fa8cc] ${
                   state.styleId === st.id
-                    ? 'bg-[#2fa8cc] text-white border-[#2fa8cc]'
+                    ? 'bg-[#2fa8cc] text-white border-[#2fa8cc] shadow-xs'
                     : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa]'
                 }`}
               >
@@ -793,7 +817,7 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
 
       {/* ── PROMPT RESULT ─────────────────────────────────────────────────── */}
       {result && (
-        <div ref={resultRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 pt-2">
+        <div ref={resultRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 pt-2 pb-24 sm:pb-0">
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-[#e2e8f0]" aria-hidden="true" />
             <span className="text-xs font-bold text-[#2fa8cc] uppercase tracking-wider px-3 py-1 rounded-full bg-[#e8f6fa]">

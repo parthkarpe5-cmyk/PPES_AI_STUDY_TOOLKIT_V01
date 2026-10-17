@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckSquare, Square, Sparkles, BookOpen, Search, Brain, AlertTriangle, UserCheck, ArrowRight } from 'lucide-react';
+import { CheckSquare, Square, Sparkles, BookOpen, Search, Brain, AlertTriangle, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 
 interface CheckItem {

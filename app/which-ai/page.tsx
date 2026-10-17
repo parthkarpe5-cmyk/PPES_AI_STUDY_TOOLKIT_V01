@@ -22,10 +22,16 @@ import { StudyIcon } from '@/components/StudyIcon';
 export default function WhichAIPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<string>('study-understand');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [profile, setProfile] = useState<StudyProfile>(DEFAULT_PROFILE);
+  const [profile, setProfile] = useState<StudyProfile>(() => {
+    return typeof window !== 'undefined' ? getStoredProfile() : DEFAULT_PROFILE;
+  });
 
   useEffect(() => {
-    setProfile(getStoredProfile());
+    const handleProfileChange = () => {
+      setProfile(getStoredProfile());
+    };
+    window.addEventListener('ppptk_profile_changed', handleProfileChange);
+    return () => window.removeEventListener('ppptk_profile_changed', handleProfileChange);
   }, []);
 
   const rec = recommendForTask(selectedTaskId) || recommendForTask('study-understand')!;

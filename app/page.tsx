@@ -240,6 +240,49 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
+          COMING SOON — Classes 11 & 12
+          Update: remove this section and add class data when 11/12 launches.
+      ════════════════════════════════════════════════════════════════════════ */}
+      <section
+        aria-label="Upcoming classes announcement"
+        className="bg-gradient-to-r from-[#0d1f35] via-[#1a2f4a] to-[#0d1f35] border-t border-b border-[#c9a227]/25 py-4 sm:py-5 overflow-hidden"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center sm:text-left">
+            {/* Icon + label */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              <span
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#c9a227]/15 border border-[#c9a227]/30 text-base"
+                aria-hidden="true"
+              >
+                🎓
+              </span>
+              <span className="text-[#c9a227] text-xs font-extrabold uppercase tracking-widest">
+                Coming Soon
+              </span>
+            </div>
+
+            {/* Divider — visible only on sm+ */}
+            <span className="hidden sm:block w-px h-5 bg-[#c9a227]/25 shrink-0" aria-hidden="true" />
+
+            {/* Copy */}
+            <p className="text-white/85 text-sm leading-snug">
+              <span className="font-bold text-white">More learning is on the way!</span>
+              {' '}
+              <span className="text-white/70">
+                Classes 11 &amp; 12 are planned for a future release — the toolkit currently supports Classes 8–10.
+              </span>
+            </p>
+
+            {/* Badge */}
+            <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 text-[#c9a227] text-[11px] font-bold uppercase tracking-wide">
+              Class 11 &amp; 12
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
           SINGLE-PAGE STUDY BUILDER
       ════════════════════════════════════════════════════════════════════════ */}
       <section

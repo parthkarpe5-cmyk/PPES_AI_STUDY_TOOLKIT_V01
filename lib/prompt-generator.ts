@@ -1,5 +1,5 @@
-import { SUBJECTS } from '@/data/subjects';
-import { STUDY_GOALS, EXPLANATION_STYLES, PROMPT_COMPONENTS, PromptComponentExplanation } from '@/data/prompt-templates';
+import { SUBJECTS } from '../data/subjects.ts';
+import { STUDY_GOALS, EXPLANATION_STYLES, PROMPT_COMPONENTS } from '../data/prompt-templates.ts';
 
 export interface PromptInput {
   classLevel: string; // '8' | '9' | '10'

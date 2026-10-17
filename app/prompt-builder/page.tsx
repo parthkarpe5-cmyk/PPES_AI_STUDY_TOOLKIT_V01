@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SUBJECTS, CLASS_LEVELS } from '@/data/subjects';
 import { STUDY_GOALS, EXPLANATION_STYLES } from '@/data/prompt-templates';
@@ -44,15 +44,17 @@ function PromptBuilderContent() {
     currentSubject.sampleTopicsByClass[classLevel as '8' | '9' | '10'] || [];
 
   // Sync state when URL params change (e.g. user navigates back from /which-ai)
-  useEffect(() => {
+  const currentParamsString = searchParams.toString();
+  const [prevParamsString, setPrevParamsString] = useState(currentParamsString);
+  if (currentParamsString !== prevParamsString) {
+    setPrevParamsString(currentParamsString);
     const g = searchParams.get('goal');
     const c = searchParams.get('class');
     const s = searchParams.get('subject');
     if (g) setGoalId(g);
     if (c) setClassLevel(c);
     if (s) setSubjectId(s);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
+  }
 
   const handleGenerate = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

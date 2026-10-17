@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint app/ components/ data/ lib/",
+    "test": "node --test --experimental-strip-types tests/prompt-generator.test.ts tests/curriculum-and-ai.test.ts tests/journeys.test.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

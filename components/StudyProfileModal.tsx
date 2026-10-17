@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ClassLevel,
   BoardType,
@@ -20,13 +20,15 @@ interface StudyProfileModalProps {
 }
 
 export function StudyProfileModal({ isOpen, onClose, onSave }: StudyProfileModalProps) {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   const [classLevel, setClassLevel] = useState<ClassLevel>('10');
   const [board, setBoard] = useState<BoardType>('cbse');
   const [syllabusSource, setSyllabusSource] = useState<SyllabusSource>('builtin');
   const [customSyllabusName, setCustomSyllabusName] = useState<string>('');
   const [uploadFileName, setUploadFileName] = useState<string>('');
 
-  useEffect(() => {
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       const p = getStoredProfile();
       setClassLevel(p.classLevel);
@@ -34,7 +36,7 @@ export function StudyProfileModal({ isOpen, onClose, onSave }: StudyProfileModal
       setSyllabusSource(p.syllabusSource);
       setCustomSyllabusName(p.customSyllabusName || '');
     }
-  }, [isOpen]);
+  }
 
   if (!isOpen) return null;
 

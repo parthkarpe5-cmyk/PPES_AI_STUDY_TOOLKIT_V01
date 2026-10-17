@@ -1,4 +1,4 @@
-import { ClassLevel, BoardType } from '@/lib/study-profile';
+import type { ClassLevel, BoardType } from '../lib/study-profile.ts';
 
 export interface ChapterCurriculum {
   id: string;
@@ -987,7 +987,7 @@ const CBSE_CLASS_8: SubjectCurriculum[] = [
   }
 ];
 
-export function getCurriculumSubjects(classLevel: ClassLevel, board: BoardType = 'cbse'): SubjectCurriculum[] {
+export function getCurriculumSubjects(classLevel: ClassLevel, _board: BoardType = 'cbse'): SubjectCurriculum[] {
   // Currently CBSE and general state boards share the core NCERT curriculum
   if (classLevel === '8') return CBSE_CLASS_8;
   if (classLevel === '9') return CBSE_CLASS_9;

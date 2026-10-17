@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { Compass, BookOpen, CheckCircle, Menu, X, GraduationCap, ArrowRight, Sparkles } from 'lucide-react';
+import { Compass, BookOpen, CheckCircle, Menu, X, ArrowRight, Sparkles } from 'lucide-react';
 import {
   getStoredProfile,
   StudyProfile,
@@ -17,12 +17,12 @@ import { StudyProfileModal } from '@/components/StudyProfileModal';
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profile, setProfile] = useState<StudyProfile>(DEFAULT_PROFILE);
+  const [profile, setProfile] = useState<StudyProfile>(() => {
+    return typeof window !== 'undefined' ? getStoredProfile() : DEFAULT_PROFILE;
+  });
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   useEffect(() => {
-    setProfile(getStoredProfile());
-
     const handleProfileChange = () => {
       setProfile(getStoredProfile());
     };
