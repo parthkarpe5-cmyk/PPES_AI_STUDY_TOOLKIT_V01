@@ -100,7 +100,7 @@ export function StudyProfileModal({ isOpen, onClose, onSave }: StudyProfileModal
               <GraduationCap className="w-4 h-4 text-[#2fa8cc]" />
               1. Which class are you in?
             </label>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
               {(['8', '9', '10'] as ClassLevel[]).map((c) => {
                 const isSelected = classLevel === c;
                 return (
@@ -118,7 +118,25 @@ export function StudyProfileModal({ isOpen, onClose, onSave }: StudyProfileModal
                   </button>
                 );
               })}
+              <div
+                className="py-2.5 px-2 rounded-xl font-semibold text-xs border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] flex flex-col items-center justify-center cursor-not-allowed select-none min-h-[44px]"
+                title="Class 11 support coming soon"
+              >
+                <span>Class 11</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#c9a227]">Soon</span>
+              </div>
+              <div
+                className="py-2.5 px-2 rounded-xl font-semibold text-xs border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] flex flex-col items-center justify-center cursor-not-allowed select-none min-h-[44px]"
+                title="Class 12 support coming soon"
+              >
+                <span>Class 12</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#c9a227]">Soon</span>
+              </div>
             </div>
+            <p className="text-[11px] text-[#7a5b0b] font-medium flex items-center gap-1">
+              <span>🎓</span>
+              <span>Classes 11 &amp; 12 are coming soon! Currently supporting Classes 8–10.</span>
+            </p>
           </div>
 
           {/* Question 2: Board */}

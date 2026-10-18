@@ -147,7 +147,7 @@ function PromptBuilderContent() {
                 <GraduationCap className="w-3.5 h-3.5 text-[#2fa8cc]" />
                 1. Select Your Class
               </label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {CLASS_LEVELS.map((c) => {
                   const isSelected = classLevel === c.value;
                   return (
@@ -155,7 +155,7 @@ function PromptBuilderContent() {
                       key={c.value}
                       type="button"
                       onClick={() => setClassLevel(c.value)}
-                      className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all text-center ${
+                      className={`py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all text-center min-h-[44px] cursor-pointer ${
                         isSelected
                           ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs ring-2 ring-[#1f4e79]/20'
                           : 'bg-[#fafbfc] text-[#1a1a1a] border-[#e2e8f0] hover:bg-[#e8f6fa] hover:border-[#2fa8cc]/50'
@@ -165,7 +165,25 @@ function PromptBuilderContent() {
                     </button>
                   );
                 })}
+                <div
+                  className="py-2.5 px-2 rounded-xl font-semibold text-xs border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] flex flex-col items-center justify-center cursor-not-allowed select-none min-h-[44px]"
+                  title="Class 11 support coming soon"
+                >
+                  <span>Class 11</span>
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#c9a227]">Soon</span>
+                </div>
+                <div
+                  className="py-2.5 px-2 rounded-xl font-semibold text-xs border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] flex flex-col items-center justify-center cursor-not-allowed select-none min-h-[44px]"
+                  title="Class 12 support coming soon"
+                >
+                  <span>Class 12</span>
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#c9a227]">Soon</span>
+                </div>
               </div>
+              <p className="text-[11px] text-[#7a5b0b] font-medium flex items-center gap-1">
+                <span>🎓</span>
+                <span>Classes 11 &amp; 12 are planned for upcoming releases. Currently supporting Classes 8–10.</span>
+              </p>
             </div>
 
             {/* 2. Subject Selection */}

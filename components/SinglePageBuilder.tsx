@@ -374,7 +374,33 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                   {cl.label}
                 </Chip>
               ))}
+              <div
+                id="class-11-coming-soon"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
+                title="Class 11 syllabus support is coming soon!"
+                aria-disabled="true"
+              >
+                <span>Class 11</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b] border border-[#c9a227]/30">
+                  Soon
+                </span>
+              </div>
+              <div
+                id="class-12-coming-soon"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
+                title="Class 12 syllabus support is coming soon!"
+                aria-disabled="true"
+              >
+                <span>Class 12</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b] border border-[#c9a227]/30">
+                  Soon
+                </span>
+              </div>
             </div>
+            <p className="text-[11px] text-[#7a5b0b] mt-2 flex items-center gap-1 font-medium">
+              <span>🎓</span>
+              <span><strong>Classes 11 &amp; 12 — Coming Soon!</strong> Current toolkit supports Classes 8–10.</span>
+            </p>
           </div>
 
           <div>
