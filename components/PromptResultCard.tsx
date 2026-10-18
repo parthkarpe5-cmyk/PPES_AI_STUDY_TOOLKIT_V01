@@ -216,6 +216,17 @@ export function PromptResultCard({ result }: PromptResultCardProps) {
               <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#2fa8cc]" />
             </button>
           </div>
+
+          {/* Syllabus / Document attachment tip */}
+          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#e8f6fa] border border-[#2fa8cc]/25 text-xs text-[#0f3557]">
+            <span className="text-base shrink-0 mt-0.5">💡</span>
+            <div className="space-y-0.5 leading-relaxed">
+              <span className="font-bold text-[#1f4e79]">Using your school&apos;s syllabus or test sheet?</span>
+              <p className="text-[11px] text-[#5a6b7b]">
+                After pasting your prompt in ChatGPT, Gemini, or Claude, simply paste your chapter&apos;s bullet points or attach your searchable PDF. Clean text gives AI 100% accuracy without formula errors!
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Student Privacy Callout */}

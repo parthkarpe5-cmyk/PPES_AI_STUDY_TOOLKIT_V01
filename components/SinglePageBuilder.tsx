@@ -422,11 +422,21 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                 </Chip>
               ))}
             </div>
-            {state.board !== 'cbse' && (
+            {state.board === 'other' ? (
+              <div className="mt-2.5 p-3 rounded-xl bg-[#e8f6fa] border border-[#2fa8cc]/30 text-xs text-[#0f3557] space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-[#1f4e79]">
+                  <span>💡</span>
+                  <span>How to use your custom syllabus:</span>
+                </p>
+                <p className="text-[11px] text-[#5a6b7b] leading-relaxed">
+                  Pasting clean chapter text, numbered bullet points, or attaching a digital text PDF works best with AI. Avoid blurry photos so formulas and equations aren&apos;t misread!
+                </p>
+              </div>
+            ) : state.board !== 'cbse' ? (
               <p className="text-[11px] text-[#5a6b7b] mt-2 italic">
                 ℹ️ Standard NCERT benchmark syllabus shown. You can pick any chapter below or enter your exact school topic in Step 5.
               </p>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
@@ -625,10 +635,15 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
           )}
 
           {/* Custom topic input */}
-          <div className="space-y-1">
-            <label htmlFor="custom-topic" className="text-[10px] font-bold uppercase tracking-wider text-[#5a6b7b]">
-              Or type a specific question / concept:
-            </label>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="custom-topic" className="text-[10px] font-bold uppercase tracking-wider text-[#5a6b7b]">
+                Or type a specific question / concept:
+              </label>
+              <span className="text-[10px] text-[#2fa8cc] font-semibold hidden sm:inline">
+                💡 Paste 2–4 chapter topics or questions
+              </span>
+            </div>
             <input
               id="custom-topic"
               type="text"
@@ -638,9 +653,12 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
                 if (e.target.value.trim()) update('topic', '');
                 setResult(null);
               }}
-              placeholder="e.g. Ohm's Law formula derivation, Photosynthesis light reaction…"
+              placeholder="e.g. 1. Chemical reactions definition, 2. Balancing equations, 3. Types of reactions…"
               className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-xs sm:text-sm text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-none placeholder:text-slate-400"
             />
+            <p className="text-[10.5px] text-[#5a6b7b] leading-tight">
+              💡 <strong>Best result:</strong> You can paste your school&apos;s exact chapter bullet points here. Clean text helps AI give spot-on, syllabus-accurate notes.
+            </p>
           </div>
         </div>
       )}

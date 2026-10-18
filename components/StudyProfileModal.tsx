@@ -224,6 +224,9 @@ export function StudyProfileModal({ isOpen, onClose, onSave }: StudyProfileModal
                   onChange={handleFileChange}
                   className="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#2fa8cc] file:text-white hover:file:bg-[#2fa8cc]/90 cursor-pointer"
                 />
+                <p className="text-[10.5px] text-[#5a6b7b] leading-tight">
+                  💡 <strong>Recommended format:</strong> Searchable digital PDF or plain text (.txt). Clean text ensures formulas and chapter topics are read accurately by AI without OCR misinterpretations.
+                </p>
                 {uploadFileName && (
                   <p className="text-[11px] text-emerald-700 font-medium">
                     ✓ Attached: {uploadFileName} (Will be used to contextualize your study prompts)
