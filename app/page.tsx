@@ -1,352 +1,298 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
   ChevronDown,
+  Compass,
+  ExternalLink
 } from 'lucide-react';
-import { InteractivePromptDemo } from '@/components/InteractivePromptDemo';
 import { SinglePageBuilder } from '@/components/SinglePageBuilder';
-import { StudyIcon } from '@/components/StudyIcon';
-import { CAPABILITY_CATEGORIES } from '@/data/capabilities';
+import { AI_TOOLS } from '@/data/ai-tools';
 
 export default function HomePage() {
   const builderRef = useRef<HTMLDivElement>(null);
-  const [selectedCapabilityId, setSelectedCapabilityId] = useState<string>('');
-  const [selectedSubCapId, setSelectedSubCapId] = useState<string>('');
 
   const scrollToBuilder = () => {
     builderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleCapabilityClick = (catId: string, subId?: string) => {
-    setSelectedCapabilityId(catId);
-    setSelectedSubCapId(subId || '');
-    scrollToBuilder();
-  };
+  // Curated 3 featured tools for the compact homepage entry
+  const featuredTools = [
+    AI_TOOLS.chatgpt,
+    AI_TOOLS.gemini,
+    AI_TOOLS.notebooklm,
+    AI_TOOLS.phet
+  ].filter(Boolean);
 
   return (
     <div className="flex flex-col gap-0 pb-16">
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          HERO — compact, punchy
+          HERO — Focused, educational, mobile-first
       ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden bg-[#0d1f35] pt-10 sm:pt-14 pb-14 sm:pb-18 border-b border-white/10 text-white">
-        {/* Ambient glows */}
+      <section className="relative overflow-hidden bg-[#0d1f35] pt-10 sm:pt-14 pb-12 sm:pb-16 border-b border-white/10 text-white">
+        {/* Subtle ambient background glow */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <div className="absolute top-0 left-1/4 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#2fa8cc]/15 blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 h-[350px] w-[350px] translate-x-1/2 translate-y-1/3 rounded-full bg-[#ff6b00]/8 blur-[110px]" />
-          <div
-            className="absolute inset-0 opacity-[0.025]"
-            style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-          />
+          <div className="absolute top-0 left-1/4 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-[#2fa8cc]/15 blur-[100px]" />
+          <div className="absolute bottom-0 right-1/4 h-[300px] w-[300px] translate-x-1/2 translate-y-1/3 rounded-full bg-[#ff6b00]/10 blur-[90px]" />
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-          {/* AI Literacy badge */}
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/8 backdrop-blur-md text-xs font-bold text-[#2fa8cc] uppercase tracking-wider">
+          {/* Grade Badge */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/15 bg-white/5 backdrop-blur-md text-xs font-bold text-[#2fa8cc] uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>AI Literacy &amp; Study Toolkit · Class 8–10</span>
+            <span>AI Study Toolkit · Class 8–10</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1] font-display">
-            AI can do a lot.<br />
-            <span className="text-[#2fa8cc]">Let&apos;s see how one good prompt works.</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] font-display">
+            Ask better study questions.<br />
+            <span className="text-[#2fa8cc]">Check what AI tells you.</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-white/75 max-w-xl mx-auto leading-relaxed">
-            Prarambh Path teaches you <em>how</em> to use AI — not just that it exists.
-            Choose what you need, ask smartly, check the answer, and actually learn.
-          </p>
-
-          {/* CHOOSE → ASK → CHECK → LEARN */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 p-2 rounded-2xl bg-white/8 border border-white/10 text-xs sm:text-sm font-bold">
-            {[
-              { icon: '🎯', label: 'Choose', color: 'text-[#2fa8cc]', bg: 'bg-[#2fa8cc]/15' },
-              { icon: '💬', label: 'Ask', color: 'text-white', bg: 'bg-white/10' },
-              { icon: '🔍', label: 'Check', color: 'text-[#ff6b00]', bg: 'bg-[#ff6b00]/15' },
-              { icon: '🧠', label: 'Learn', color: 'text-[#f0d074]', bg: 'bg-[#c9a227]/20' },
-            ].map((step, i, arr) => (
-              <React.Fragment key={step.label}>
-                <span className={`flex items-center gap-1.5 ${step.color} ${step.bg} px-2.5 py-1.5 rounded-xl`}>
-                  <span>{step.icon}</span>
-                  <span>{step.label}</span>
-                </span>
-                {i < arr.length - 1 && <span className="text-white/25 text-xs">→</span>}
-              </React.Fragment>
-            ))}
+          {/* Core Philosophy Journey */}
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-white/8 border border-white/10 text-xs sm:text-sm font-bold">
+            <span className="flex items-center gap-1.5 text-[#2fa8cc] bg-[#2fa8cc]/15 px-3 py-1.5 rounded-xl">
+              <span>🎯</span>
+              <span>Choose</span>
+            </span>
+            <span className="text-white/30 text-xs">→</span>
+            <span className="flex items-center gap-1.5 text-white bg-white/10 px-3 py-1.5 rounded-xl">
+              <span>💬</span>
+              <span>Ask</span>
+            </span>
+            <span className="text-white/30 text-xs">→</span>
+            <span className="flex items-center gap-1.5 text-[#ff6b00] bg-[#ff6b00]/15 px-3 py-1.5 rounded-xl">
+              <span>🔍</span>
+              <span>Check</span>
+            </span>
+            <span className="text-white/30 text-xs">→</span>
+            <span className="flex items-center gap-1.5 text-[#f0d074] bg-[#c9a227]/20 px-3 py-1.5 rounded-xl">
+              <span>🧠</span>
+              <span>Learn</span>
+            </span>
           </div>
 
-          {/* Primary CTA */}
+          {/* Primary CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <button
               type="button"
               onClick={scrollToBuilder}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-[#ff6b00] to-orange-600 shadow-xl shadow-[#ff6b00]/25 hover:shadow-[#ff6b00]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base text-white bg-gradient-to-r from-[#ff6b00] to-orange-600 shadow-xl shadow-[#ff6b00]/25 hover:shadow-[#ff6b00]/40 hover:scale-102 active:scale-98 transition-all cursor-pointer min-h-[48px]"
             >
               <span>Build My Study Prompt</span>
               <ChevronDown className="w-5 h-5" />
             </button>
             <Link
-              href="/verify"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-sm text-white bg-white/8 border border-white/15 hover:bg-white/15 hover:border-white/25 transition-all duration-200"
+              href="/which-ai"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-sm text-white bg-white/10 border border-white/20 hover:bg-white/15 transition-all min-h-[48px]"
             >
-              <span>🔍 How to Verify AI Answers</span>
+              <span>Explore AI Tools</span>
+              <Compass className="w-4 h-4 text-[#2fa8cc]" />
             </Link>
           </div>
 
-          {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/50 pt-2">
-            <span className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-[#2fa8cc]" /> Free &amp; Anonymous</span>
-            <span className="text-white/20">•</span>
-            <span>No Signup Required</span>
-            <span className="text-white/20">•</span>
-            <span>No AI API Used</span>
+          {/* Transparent disclaimer */}
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-white/50 pt-1">
+            <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#2fa8cc]" /> Free &amp; Anonymous</span>
+            <span>•</span>
+            <span>No account required</span>
+            <span>•</span>
+            <span>Prepares prompts for external tools</span>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          INTERACTIVE PROMPT DEMO
+          EXPLAIN THE DIFFERENCE FROM CHATGPT — "How this helps"
       ════════════════════════════════════════════════════════════════════════ */}
-      <section className="bg-gradient-to-b from-[#0d1f35] to-[#fafbfc] pt-10 sm:pt-14 pb-14 sm:pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 space-y-2">
-            <span className="inline-block text-xs font-bold text-[#2fa8cc] uppercase tracking-wider bg-[#e8f6fa] px-3 py-1 rounded-full">
-              Step 1 — See how a prompt works
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1f4e79] font-display">
-              What&apos;s inside a good AI prompt?
-            </h2>
-            <p className="text-sm text-[#5a6b7b] max-w-md mx-auto">
-              Tap each highlighted part below to discover what it does. You&apos;ll understand prompting in 60 seconds.
-            </p>
-          </div>
+      <section className="bg-white border-b border-[#e2e8f0] py-10 sm:py-14">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          {/* Main "How this helps" card */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-[#fafbfc] border border-[#2fa8cc]/30 shadow-xs space-y-4">
+            <div className="space-y-2">
+              <span className="inline-block text-xs font-bold text-[#2fa8cc] uppercase tracking-wider bg-[#e8f6fa] px-3 py-1 rounded-full">
+                How this helps
+              </span>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-[#1f4e79] font-display">
+                &ldquo;ChatGPT answers your questions. This toolkit helps you ask better study questions and check what AI tells you.&rdquo;
+              </h2>
+              <p className="text-xs sm:text-sm text-[#5a6b7b] leading-relaxed">
+                Most students use AI as a fast answer-generator for homework, which does not help during exams. This toolkit trains you to use AI as an interactive study mentor through three benefits:
+              </p>
+            </div>
 
-          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-sm p-5 sm:p-8">
-            <InteractivePromptDemo />
-          </div>
-
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={scrollToBuilder}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1f4e79] text-white text-sm font-bold hover:bg-[#2fa8cc] transition-colors cursor-pointer"
-            >
-              <span>Now build your own prompt ↓</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════════
-          CAPABILITY GALLERY — "What can AI help you do?"
-      ════════════════════════════════════════════════════════════════════════ */}
-      <section className="bg-white border-t border-[#e2e8f0] py-12 sm:py-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 space-y-2">
-            <span className="inline-block text-xs font-bold text-[#ff6b00] uppercase tracking-wider bg-[#fff9f0] px-3 py-1 rounded-full">
-              Step 2 — Discover what AI can do
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1f4e79] font-display">
-              What do you want AI to help you with?
-            </h2>
-            <p className="text-sm text-[#5a6b7b] max-w-lg mx-auto">
-              AI isn&apos;t just for answers. Tap a category to see what it can actually create for you.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            {CAPABILITY_CATEGORIES.map(cat => {
-              const isSelected = selectedCapabilityId === cat.id;
-              return (
-                <div key={cat.id} className="space-y-2">
-                  <button
-                    type="button"
-                    aria-expanded={isSelected}
-                    onClick={() => {
-                      setSelectedCapabilityId(prev => prev === cat.id ? '' : cat.id);
-                      setSelectedSubCapId('');
-                    }}
-                    className={`
-                      w-full p-4 sm:p-5 rounded-2xl border text-left transition-all duration-200 cursor-pointer group
-                      ${isSelected
-                        ? `${cat.colorBg} ${cat.colorBorder} border-2 shadow-md`
-                        : 'bg-[#fafbfc] border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:shadow-sm'
-                      }
-                    `}
-                  >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 transition-colors ${
-                      isSelected ? 'bg-white shadow-xs' : 'bg-[#f0f4f8] text-[#1f4e79]'
-                    }`}>
-                      <StudyIcon name={cat.id} className={`w-5 h-5 ${isSelected ? cat.colorText : 'text-[#1f4e79]'}`} />
-                    </div>
-                    <span className={`text-base font-extrabold font-display block ${isSelected ? cat.colorText : 'text-[#1a1a1a]'}`}>
-                      {cat.label}
-                    </span>
-                    <span className={`text-xs block mt-0.5 leading-snug ${isSelected ? cat.colorText + ' opacity-75' : 'text-[#5a6b7b]'}`}>
-                      {cat.tagline}
-                    </span>
-                  </button>
-
-                  {/* Sub-capabilities — reveal inline */}
-                  {isSelected && (
-                    <div className={`${cat.colorBg} rounded-xl p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150 border ${cat.colorBorder}`}>
-                      {cat.subs.map(sub => (
-                        <button
-                          key={sub.id}
-                          type="button"
-                          aria-pressed={selectedSubCapId === sub.id}
-                          onClick={() => handleCapabilityClick(cat.id, sub.id)}
-                          className={`
-                            w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer
-                            focus-visible:outline-2 focus-visible:outline-[#1f4e79] focus-visible:outline-offset-1
-                            ${selectedSubCapId === sub.id
-                              ? 'bg-[#1f4e79] text-white'
-                              : `bg-white/80 ${cat.colorText} hover:bg-white`
-                            }
-                          `}
-                        >
-                          <StudyIcon name={sub.id} className="w-3.5 h-3.5 shrink-0" />
-                          <span className="flex-1">{sub.label}</span>
-                          <ArrowRight className="w-3 h-3 opacity-50" aria-hidden="true" />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+            {/* Three Benefits */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="p-4 rounded-2xl bg-white border border-[#e2e8f0] space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-[#e8f6fa] text-[#1f4e79] flex items-center justify-center font-bold text-sm">
+                  1
                 </div>
-              );
-            })}
-          </div>
+                <h3 className="text-sm font-bold text-[#1f4e79] font-display">
+                  Organise your study context
+                </h3>
+                <p className="text-xs text-[#5a6b7b] leading-relaxed">
+                  Lock in your exact class (8, 9, or 10), board curriculum, and chapter topic so AI explains at the right depth instead of using confusing college math.
+                </p>
+              </div>
 
-          {selectedCapabilityId && (
-            <div className="mt-6 text-center animate-in fade-in duration-200">
-              <button
-                type="button"
-                onClick={scrollToBuilder}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff6b00] to-orange-600 text-white font-bold text-sm shadow-md hover:scale-[1.02] active:scale-[0.99] transition-all cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Build prompt for this →</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+              <div className="p-4 rounded-2xl bg-white border border-[#e2e8f0] space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-[#e8f6fa] text-[#1f4e79] flex items-center justify-center font-bold text-sm">
+                  2
+                </div>
+                <h3 className="text-sm font-bold text-[#1f4e79] font-display">
+                  Ask for explanations, hints, or practice
+                </h3>
+                <p className="text-xs text-[#5a6b7b] leading-relaxed">
+                  Default problem solving to one hint at a time, and instruct external AI to withhold practice quiz answers until you try them first.
+                </p>
+              </div>
 
-      {/* ═══════════════════════════════════════════════════════════════════════
-          COMING SOON — Classes 11 & 12
-          Update: remove this section and add class data when 11/12 launches.
-      ════════════════════════════════════════════════════════════════════════ */}
-      <section
-        aria-label="Upcoming classes announcement"
-        className="bg-gradient-to-r from-[#0d1f35] via-[#1a2f4a] to-[#0d1f35] border-t border-b border-[#c9a227]/25 py-4 sm:py-5 overflow-hidden"
-      >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center sm:text-left">
-            {/* Icon + label */}
-            <div className="flex items-center gap-2.5 shrink-0">
-              <span
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-[#c9a227]/15 border border-[#c9a227]/30 text-base"
-                aria-hidden="true"
-              >
-                🎓
-              </span>
-              <span className="text-[#c9a227] text-xs font-extrabold uppercase tracking-widest">
-                Coming Soon
-              </span>
+              <div className="p-4 rounded-2xl bg-white border border-[#e2e8f0] space-y-2">
+                <div className="w-8 h-8 rounded-lg bg-[#e8f6fa] text-[#1f4e79] flex items-center justify-center font-bold text-sm">
+                  3
+                </div>
+                <h3 className="text-sm font-bold text-[#1f4e79] font-display">
+                  Check answers against your textbook
+                </h3>
+                <p className="text-xs text-[#5a6b7b] leading-relaxed">
+                  AI makes confident mistakes. Build the habit of cross-checking formulas, SI units, and definitions against your official textbook.
+                </p>
+              </div>
             </div>
 
-            {/* Divider — visible only on sm+ */}
-            <span className="hidden sm:block w-px h-5 bg-[#c9a227]/25 shrink-0" aria-hidden="true" />
-
-            {/* Copy */}
-            <p className="text-white/85 text-sm leading-snug">
-              <span className="font-bold text-white">More learning is on the way!</span>
-              {' '}
-              <span className="text-white/70">
-                Classes 11 &amp; 12 are planned for a future release — the toolkit currently supports Classes 8–10.
-              </span>
-            </p>
-
-            {/* Badge */}
-            <span className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9a227]/10 border border-[#c9a227]/30 text-[#c9a227] text-[11px] font-bold uppercase tracking-wide">
-              Class 11 &amp; 12
-            </span>
+            {/* Honest scope statement */}
+            <div className="pt-2 border-t border-[#e2e8f0] text-[11px] text-[#5a6b7b] leading-relaxed">
+              <strong>Honest product note:</strong> This toolkit prepares structured study prompts for external tools (ChatGPT, Gemini, etc.). It does not run an internal AI model or process private documents on our servers.
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          SINGLE-PAGE STUDY BUILDER
+          CANONICAL SINGLE-PAGE STUDY BUILDER
       ════════════════════════════════════════════════════════════════════════ */}
       <section
         ref={builderRef}
         id="study-builder"
-        className="bg-[#fafbfc] border-t border-[#e2e8f0] py-12 sm:py-16"
+        className="bg-[#fafbfc] border-b border-[#e2e8f0] py-10 sm:py-16"
       >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 space-y-2">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="text-center space-y-2">
             <span className="inline-block text-xs font-bold text-white uppercase tracking-wider bg-[#1f4e79] px-3 py-1 rounded-full">
-              Step 3 — Build your own
+              Canonical Study Builder
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1f4e79] font-display">
               Build Your AI Study Prompt
             </h2>
-            <p className="text-sm text-[#5a6b7b] max-w-md mx-auto">
-              Select your class, subject, topic, and what you want. Your prompt builds automatically.
+            <p className="text-xs sm:text-sm text-[#5a6b7b] max-w-md mx-auto leading-relaxed">
+              Choose your class, subject, topic, and goal. Your prompt will be formatted to promote active understanding.
             </p>
           </div>
 
-          <SinglePageBuilder
-            initialCapabilityId={selectedCapabilityId}
-            initialSubCapabilityId={selectedSubCapId}
-          />
+          <SinglePageBuilder />
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          EDUCATIONAL PHILOSOPHY — compact
+          COMPACT HOMEPAGE ENTRY: "AI TOOLS FOR STUDENTS"
       ════════════════════════════════════════════════════════════════════════ */}
-      <section className="bg-[#0d1f35] py-10 sm:py-14">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            {[
-              {
-                icon: '💬',
-                title: 'Teach yourself to ask',
-                desc: 'A well-made prompt gets a useful answer. A vague question gets a confusing wall of text.'
-              },
-              {
-                icon: '🔍',
-                title: 'Always verify',
-                desc: 'AI makes confident mistakes. Cross-check formulas, dates and facts against your textbook every time.'
-              },
-              {
-                icon: '🧠',
-                title: 'Learn, don\'t copy',
-                desc: 'Prarambh Path teaches AI literacy — not how to cheat. The goal is your understanding, not the answer.'
-              },
-            ].map(item => (
-              <div key={item.title} className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-                <span className="text-3xl block">{item.icon}</span>
-                <h3 className="text-sm font-bold text-white font-display">{item.title}</h3>
-                <p className="text-xs text-white/65 leading-relaxed">{item.desc}</p>
+      <section className="bg-white py-12 sm:py-16 border-b border-[#e2e8f0]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div className="space-y-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#2fa8cc] block">
+                Reviewed &amp; Verified Directory
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1f4e79] font-display">
+                AI Tools for Students
+              </h2>
+              <p className="text-xs sm:text-sm text-[#5a6b7b] max-w-xl">
+                We review terms of service, pricing, and age requirements before recommending any AI tool.
+              </p>
+            </div>
+
+            <Link
+              href="/which-ai"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1f4e79] hover:bg-[#2fa8cc] text-white text-xs font-bold transition-all shrink-0 min-h-[44px]"
+            >
+              <span>Explore All Verified Tools ({Object.keys(AI_TOOLS).length})</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {/* Curated 4 cards on homepage */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {featuredTools.map((tool) => (
+              <div
+                key={tool.id}
+                className="p-4 rounded-2xl border border-[#e2e8f0] bg-[#fafbfc] flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-[#1f4e79] font-display">
+                      {tool.name}
+                    </h3>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      {tool.freeAccessType}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#5a6b7b] line-clamp-2 leading-relaxed">
+                    {tool.bestFor}
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t border-[#e2e8f0]">
+                  <span className="text-[11px] text-[#1f4e79] font-medium block">
+                    {tool.minimumAge}
+                  </span>
+                  <a
+                    href={tool.officialUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-white border border-[#e2e8f0] text-xs font-bold text-[#1f4e79] hover:border-[#2fa8cc] hover:text-[#2fa8cc] transition-colors min-h-[40px]"
+                  >
+                    <span>Visit website</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 text-center">
+          <div className="text-center pt-2">
+            <Link
+              href="/which-ai"
+              className="text-xs font-bold text-[#2fa8cc] hover:text-[#1f4e79] underline underline-offset-4"
+            >
+              Filter by student task: Math, Science, Quizzes, Coding, and Document review →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          CHECK BEFORE YOU TRUST CTA
+      ════════════════════════════════════════════════════════════════════════ */}
+      <section className="bg-[#0d1f35] py-10 sm:py-14 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <span className="text-2xl block" aria-hidden="true">🔍</span>
+          <h2 className="text-xl sm:text-2xl font-bold font-display">
+            Never blindly copy an AI answer
+          </h2>
+          <p className="text-xs sm:text-sm text-white/75 max-w-lg mx-auto leading-relaxed">
+            AI can hallucinate dates, mix up formula units, and make confident mistakes. Always practice our 3-step checking habit before writing an answer in your school notebook.
+          </p>
+          <div className="pt-2">
             <Link
               href="/verify"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:border-white/40 text-sm font-semibold transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/20 hover:border-white/40 text-white font-semibold text-xs sm:text-sm transition-all min-h-[44px]"
             >
-              <span>Learn the 5-step verification checklist</span>
+              <span>Learn the 3-step checking habit</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

@@ -7,6 +7,7 @@ export interface StudyProfile {
   board: BoardType;
   syllabusSource: SyllabusSource;
   customSyllabusName?: string;
+  pastedSyllabusText?: string;
   hasSetup: boolean;
 }
 
@@ -41,11 +42,15 @@ export function getStoredProfile(): StudyProfile {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_PROFILE;
     const parsed = JSON.parse(raw);
+    const validClasses: ClassLevel[] = ['8', '9', '10'];
+    const validBoards: BoardType[] = ['cbse', 'icse', 'state', 'other'];
+
     return {
-      classLevel: parsed.classLevel || '10',
-      board: parsed.board || 'cbse',
-      syllabusSource: parsed.syllabusSource || 'builtin',
-      customSyllabusName: parsed.customSyllabusName,
+      classLevel: validClasses.includes(parsed.classLevel) ? parsed.classLevel : '10',
+      board: validBoards.includes(parsed.board) ? parsed.board : 'cbse',
+      syllabusSource: parsed.syllabusSource === 'custom' ? 'custom' : 'builtin',
+      customSyllabusName: typeof parsed.customSyllabusName === 'string' ? parsed.customSyllabusName : undefined,
+      pastedSyllabusText: typeof parsed.pastedSyllabusText === 'string' ? parsed.pastedSyllabusText : undefined,
       hasSetup: Boolean(parsed.hasSetup)
     };
   } catch {
@@ -71,5 +76,16 @@ export function saveStoredProfile(profile: Partial<StudyProfile>): StudyProfile 
     return updated;
   } catch {
     return { ...DEFAULT_PROFILE, ...profile, hasSetup: true };
+  }
+}
+
+export function clearStoredProfile(): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new Event('ppptk_profile_changed'));
+  } catch {
+    // Graceful ignore
   }
 }

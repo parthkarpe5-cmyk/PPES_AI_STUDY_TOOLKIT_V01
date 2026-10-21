@@ -98,7 +98,7 @@ export const STUDY_TASKS: TaskOption[] = [
     shortDesc: 'Learn Python, HTML/CSS, Scratch, and debug student programming errors.',
     requiredCapability: 'Code syntax explanation, debugging & step-by-step logic',
     recommendedApproach: 'Use a coding-optimized AI assistant to explain errors rather than just giving raw code.',
-    recommendedToolIds: ['copilot', 'chatgpt', 'claude'],
+    recommendedToolIds: ['chatgpt', 'claude'],
     reason: 'These tools can pinpoint the exact line number of a syntax error and explain the logic in beginner-friendly terms.',
     caution: 'Try writing the code yourself first. Never submit code you cannot explain line-by-line.',
     suggestedPromptGoal: 'code',

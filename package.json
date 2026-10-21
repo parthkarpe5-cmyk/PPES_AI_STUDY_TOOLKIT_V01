@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint app/ components/ data/ lib/",
-    "test": "node --test --experimental-strip-types tests/prompt-generator.test.ts tests/curriculum-and-ai.test.ts tests/journeys.test.ts"
+    "test": "node --test --experimental-strip-types tests/prompt-generator.test.ts tests/curriculum-and-ai.test.ts tests/journeys.test.ts tests/v2-redesign.test.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

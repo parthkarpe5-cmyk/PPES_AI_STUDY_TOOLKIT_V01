@@ -1,17 +1,31 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
-  Sparkles, RotateCcw, Search,
-  ChevronDown, ShieldAlert, Check, Copy, ExternalLink, Bot
+  Sparkles,
+  RotateCcw,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  ShieldAlert,
+  Check,
+  Copy,
+  ExternalLink,
+  Bot,
+  FileText,
+  SlidersHorizontal
 } from 'lucide-react';
-import { SUBJECTS, CLASS_LEVELS } from '@/data/subjects';
+import { CLASS_LEVELS } from '@/data/subjects';
 import { getStoredProfile, saveStoredProfile } from '@/lib/study-profile';
 import type { ClassLevel, BoardType } from '@/lib/study-profile';
 import { getCurriculumSubjects } from '@/data/curriculum';
-import { CAPABILITY_CATEGORIES, type SubCapability } from '@/data/capabilities';
-import { EXPLANATION_STYLES } from '@/data/prompt-templates';
+import {
+  EXPLANATION_STYLES,
+  SOLVE_APPROACHES,
+  type SolveApproach
+} from '@/data/prompt-templates';
+import { CAPABILITY_CATEGORIES } from '@/data/capabilities';
 import { generateStudyPrompt, type GeneratedPromptResult } from '@/lib/prompt-generator';
 import { PromptResultCard } from '@/components/PromptResultCard';
 import { StudyIcon } from '@/components/StudyIcon';
@@ -24,9 +38,10 @@ interface BuilderState {
   subjectId: string;
   chapterId: string;
   topic: string;
-  capabilityId: string;
-  subCapabilityId: string;
+  customTopic: string;
+  pastedSyllabus: string;
   goalId: string;
+  solveApproach: SolveApproach;
   styleId: string;
   examFocus: boolean;
 }
@@ -38,10 +53,42 @@ const BOARDS: { id: BoardType; label: string; emoji: string }[] = [
   { id: 'other', label: 'My Syllabus', emoji: '📄' },
 ];
 
-// ─── Small reusable chip ────────────────────────────────────────────────────
+// Four primary study goals required by V2 specification
+const PRIMARY_GOALS: { id: string; label: string; icon: string; description: string }[] = [
+  {
+    id: 'understand-topic',
+    label: 'Understand it',
+    icon: '💡',
+    description: 'Break down principles with intuitive analogies and clear concepts.'
+  },
+  {
+    id: 'practice-questions',
+    label: 'Practise questions',
+    icon: '❓',
+    description: 'Test your understanding. Answers withheld until you attempt.'
+  },
+  {
+    id: 'revise',
+    label: 'Revise',
+    icon: '🔄',
+    description: 'Fast active recall of formulas, key definitions, and differences.'
+  },
+  {
+    id: 'solve-problem',
+    label: 'Help me solve',
+    icon: '🧩',
+    description: 'Work through problems with hints first or step-by-step guidance.'
+  }
+];
+
+// ─── Reusable Chip ────────────────────────────────────────────────────────────
 
 function Chip({
-  selected, onClick, children, id, disabled
+  selected,
+  onClick,
+  children,
+  id,
+  disabled
 }: {
   selected: boolean;
   onClick: () => void;
@@ -73,25 +120,36 @@ function Chip({
   );
 }
 
-// ─── Step header ────────────────────────────────────────────────────────────
+// ─── Step Header ─────────────────────────────────────────────────────────────
 
 function StepLabel({ n, label, done }: { n: number; label: string; done: boolean }) {
   return (
     <div className="flex items-center gap-2 mb-2 sm:mb-3">
-      <span className={`
-        w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-extrabold shrink-0 transition-colors
-        ${done ? 'bg-[#2fa8cc] text-white' : 'bg-[#e2e8f0] text-[#5a6b7b]'}
-      `}>
-        {done ? <Check className="w-3 h-3" /> : n}
+      <span
+        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 transition-colors ${
+          done ? 'bg-[#2fa8cc] text-white' : 'bg-[#e2e8f0] text-[#5a6b7b]'
+        }`}
+      >
+        {done ? <Check className="w-3.5 h-3.5" /> : n}
       </span>
-      <span className="text-[11px] sm:text-xs font-bold text-[#5a6b7b] uppercase tracking-wider">{label}</span>
+      <span className="text-xs sm:text-sm font-bold text-[#1f4e79] uppercase tracking-wider font-display">
+        {label}
+      </span>
     </div>
   );
 }
 
-// ─── Compact Mobile Step Indicator ──────────────────────────────────────────
+// ─── Mobile Step Indicator ───────────────────────────────────────────────────
 
-function MobileStepIndicator({ currentStep, totalSteps = 6, label }: { currentStep: number; totalSteps?: number; label: string }) {
+function MobileStepIndicator({
+  currentStep,
+  totalSteps = 5,
+  label
+}: {
+  currentStep: number;
+  totalSteps?: number;
+  label: string;
+}) {
   return (
     <div className="sm:hidden flex items-center justify-between px-3.5 py-2 rounded-xl bg-white border border-[#e2e8f0] shadow-2xs text-xs font-semibold text-[#1f4e79]">
       <div className="flex items-center gap-1.5">
@@ -116,111 +174,87 @@ function MobileStepIndicator({ currentStep, totalSteps = 6, label }: { currentSt
   );
 }
 
-// ─── Prompt preview (before full result) ────────────────────────────────────
-
-function PromptPreview({ state, customTopic }: { state: BuilderState; customTopic: string }) {
-  const topic = customTopic.trim() || state.topic;
-  const cap = CAPABILITY_CATEGORIES.find(c => c.id === state.capabilityId);
-  const sub = cap?.subs.find(s => s.id === state.subCapabilityId);
-  const subjectData = SUBJECTS.find(s => s.id === state.subjectId);
-
-  const parts: { label: string; value: string; color: string }[] = [];
-  parts.push({ label: 'Class', value: `Class ${state.classLevel}`, color: 'bg-[#e8f6fa] text-[#1f4e79]' });
-  if (state.subjectId) parts.push({ label: 'Subject', value: subjectData?.name || state.subjectId, color: 'bg-amber-50 text-amber-900' });
-  if (topic) parts.push({ label: 'Topic', value: topic, color: 'bg-purple-50 text-purple-900' });
-  if (cap) parts.push({ label: 'Goal', value: sub?.label || cap.label, color: 'bg-emerald-50 text-emerald-900' });
-
-  return (
-    <div className="rounded-2xl border border-dashed border-[#2fa8cc]/40 bg-[#fafbfc] p-3.5 sm:p-4 space-y-2">
-      <div className="flex items-center gap-2">
-        <Sparkles className="w-4 h-4 text-[#2fa8cc]" aria-hidden="true" />
-        <span className="text-[11px] sm:text-xs font-bold text-[#2fa8cc] uppercase tracking-wide">
-          {parts.length < 3 ? 'Your prompt is taking shape…' : 'Almost ready — choose a goal to generate'}
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {parts.map(p => (
-          <span key={p.label} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${p.color}`}>
-            <span className="opacity-60 font-normal">{p.label}:</span>
-            <span>{p.value}</span>
-          </span>
-        ))}
-        {parts.length < 4 && (
-          <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-[#e2e8f0] text-[#5a6b7b] border border-dashed border-[#c0c8d4]">
-            + more…
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Main component ──────────────────────────────────────────────────────────
+// ─── Main Canonical Builder Component ────────────────────────────────────────
 
 interface SinglePageBuilderProps {
   initialCapabilityId?: string;
   initialSubCapabilityId?: string;
+  initialGoalId?: string;
 }
 
-export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId }: SinglePageBuilderProps) {
+export function SinglePageBuilder({
+  initialCapabilityId,
+  initialSubCapabilityId,
+  initialGoalId
+}: SinglePageBuilderProps) {
   const resultRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useState<BuilderState>(() => {
-    const profile = typeof window !== 'undefined' ? getStoredProfile() : { classLevel: '10' as ClassLevel, board: 'cbse' as BoardType };
-    const initCat = initialCapabilityId ? CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId) : undefined;
-    const initSub = initCat && initialSubCapabilityId ? initCat.subs.find(s => s.id === initialSubCapabilityId) : undefined;
+    const profile = typeof window !== 'undefined'
+      ? getStoredProfile()
+      : { classLevel: '10' as ClassLevel, board: 'cbse' as BoardType };
+
+    // Resolve initial goal if passed
+    let initGoal = initialGoalId || 'understand-topic';
+    if (!initialGoalId && initialCapabilityId) {
+      const cat = CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId);
+      const sub = cat && initialSubCapabilityId ? cat.subs.find(s => s.id === initialSubCapabilityId) : undefined;
+      initGoal = sub?.goalId || cat?.defaultGoalId || 'understand-topic';
+    }
+
     return {
-      classLevel: profile.classLevel,
-      board: profile.board,
+      classLevel: profile.classLevel || '10',
+      board: profile.board || 'cbse',
       subjectId: '',
       chapterId: '',
       topic: '',
-      capabilityId: initCat?.id || '',
-      subCapabilityId: initSub?.id || '',
-      goalId: initSub?.goalId || initCat?.defaultGoalId || '',
-      styleId: initSub?.styleId || 'simple',
-      examFocus: true,
+      customTopic: '',
+      pastedSyllabus: '',
+      goalId: initGoal,
+      solveApproach: 'hints-first',
+      styleId: 'simple',
+      examFocus: true
     };
   });
 
   const [chapterSearch, setChapterSearch] = useState('');
   const [topicSearch, setTopicSearch] = useState('');
-  const [customTopic, setCustomTopic] = useState('');
+  const [showPastedSyllabus, setShowPastedSyllabus] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [result, setResult] = useState<GeneratedPromptResult | null>(null);
-  const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [copiedSticky, setCopiedSticky] = useState(false);
 
-  // Sync capability when props change from external navigation
-  const currentCapKey = `${initialCapabilityId || ''}:${initialSubCapabilityId || ''}`;
+  // Sync when initial props change
+  const currentCapKey = `${initialCapabilityId || ''}:${initialSubCapabilityId || ''}:${initialGoalId || ''}`;
   const [prevCapKey, setPrevCapKey] = useState(currentCapKey);
 
   if (currentCapKey !== prevCapKey) {
     setPrevCapKey(currentCapKey);
-    if (initialCapabilityId) {
+    let resolvedGoal = initialGoalId;
+    if (!resolvedGoal && initialCapabilityId) {
       const cat = CAPABILITY_CATEGORIES.find(c => c.id === initialCapabilityId);
-      if (cat) {
-        const sub = initialSubCapabilityId
-          ? cat.subs.find(s => s.id === initialSubCapabilityId)
-          : undefined;
-        setState(prev => ({
-          ...prev,
-          capabilityId: initialCapabilityId,
-          subCapabilityId: sub?.id || '',
-          goalId: sub?.goalId || cat.defaultGoalId,
-          styleId: sub?.styleId || 'simple',
-        }));
-        setResult(null);
-      }
+      const sub = cat && initialSubCapabilityId ? cat.subs.find(s => s.id === initialSubCapabilityId) : undefined;
+      resolvedGoal = sub?.goalId || cat?.defaultGoalId;
+    }
+    if (resolvedGoal) {
+      setState(prev => ({ ...prev, goalId: resolvedGoal! }));
+      setResult(null);
     }
   }
 
-  // Listen to profile change events from modal
+  // Sync profile when updated from modal
   useEffect(() => {
     const handleProfileChange = () => {
       const p = getStoredProfile();
-      setState(prev => ({ ...prev, classLevel: p.classLevel, board: p.board }));
+      setState(prev => ({
+        ...prev,
+        classLevel: p.classLevel,
+        board: p.board,
+        pastedSyllabus: p.pastedSyllabusText || prev.pastedSyllabus
+      }));
     };
     window.addEventListener('ppptk_profile_changed', handleProfileChange);
+    return () => window.removeEventListener('ppptk_profile_changed', handleProfileChange);
   }, []);
 
   // Derived values
@@ -234,79 +268,93 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
   const filteredTopics = availableTopics.filter(t =>
     t.toLowerCase().includes(topicSearch.toLowerCase())
   );
-  const selectedCap = CAPABILITY_CATEGORIES.find(c => c.id === state.capabilityId);
-  const selectedSubCap: SubCapability | undefined = selectedCap?.subs.find(s => s.id === state.subCapabilityId);
-  const sampleTopics = SUBJECTS.find(s => s.id === state.subjectId)?.sampleTopicsByClass[state.classLevel] || [];
+  const hasSubject = Boolean(state.subjectId);
+  const hasTopic = Boolean(state.topic || state.customTopic.trim());
+  const hasGoal = Boolean(state.goalId);
+  const isReady = Boolean(hasSubject && hasTopic && hasGoal);
 
-  // Progress flags
-  const hasClass = !!state.classLevel;
-  const hasBoard = !!state.board;
-  const hasSubject = !!state.subjectId;
-  const hasTopic = !!(state.topic || customTopic.trim());
-  const hasGoal = !!state.goalId;
-  const isReady = !!(hasSubject && hasTopic && hasGoal);
+  // Step numbering for mobile
+  const currentStepNumber = !hasSubject ? 2 : !hasTopic ? 3 : !hasGoal ? 4 : 5;
+  const currentStepLabel = !hasSubject ? 'Subject' : !hasTopic ? 'Topic' : !hasGoal ? 'Goal' : 'Generate';
 
-  // Progressive step logic
-  const showChapters = hasSubject;
-  const showTopics = hasSubject;
-  const showGoal = hasSubject && hasTopic;
-  const showStyleAndGenerate = hasGoal;
-  const showPromptPreview = !!(hasSubject || hasTopic || hasGoal);
-
-  // Calculate current active step (1 to 6)
-  const currentStepNumber = !hasClass ? 1 : !hasBoard ? 2 : !hasSubject ? 3 : !state.chapterId ? 4 : !hasTopic ? 5 : !hasGoal ? 6 : 6;
-  const currentStepLabel = !hasClass ? 'Class' : !hasBoard ? 'Board' : !hasSubject ? 'Subject' : !state.chapterId ? 'Chapter' : !hasTopic ? 'Topic' : 'Goal';
-
-  const update = useCallback(<K extends keyof BuilderState>(key: K, val: BuilderState[K]) => {
-    setState(prev => ({ ...prev, [key]: val }));
-    setResult(null);
-  }, []);
-
-  const selectCapability = (catId: string) => {
-    const cat = CAPABILITY_CATEGORIES.find(c => c.id === catId);
-    if (!cat) return;
-    if (state.capabilityId === catId) {
-      setState(prev => ({ ...prev, capabilityId: '', subCapabilityId: '', goalId: '' }));
-      setResult(null);
-      return;
-    }
+  // Dependent field resets
+  const handleClassChange = (newClass: ClassLevel) => {
     setState(prev => ({
       ...prev,
-      capabilityId: catId,
-      subCapabilityId: '',
-      goalId: cat.defaultGoalId,
-      styleId: 'simple',
+      classLevel: newClass,
+      subjectId: '',
+      chapterId: '',
+      topic: '',
+      customTopic: ''
     }));
     setResult(null);
   };
 
-  const selectSubCapability = (sub: SubCapability) => {
+  const handleBoardChange = (newBoard: BoardType) => {
     setState(prev => ({
       ...prev,
-      subCapabilityId: sub.id,
-      goalId: sub.goalId,
-      styleId: sub.styleId,
+      board: newBoard,
+      subjectId: '',
+      chapterId: '',
+      topic: '',
+      customTopic: ''
     }));
+    setResult(null);
+  };
+
+  const handleSubjectChange = (newSubId: string) => {
+    setState(prev => ({
+      ...prev,
+      subjectId: newSubId,
+      chapterId: '',
+      topic: '',
+      customTopic: ''
+    }));
+    setResult(null);
+  };
+
+  const handleGoalSelect = (goalId: string) => {
+    setState(prev => ({ ...prev, goalId }));
+    setResult(null);
+  };
+
+  const handleReset = () => {
+    setState(prev => ({
+      ...prev,
+      subjectId: '',
+      chapterId: '',
+      topic: '',
+      customTopic: '',
+      pastedSyllabus: '',
+      goalId: 'understand-topic',
+      solveApproach: 'hints-first',
+      styleId: 'simple',
+      examFocus: true
+    }));
+    setChapterSearch('');
+    setTopicSearch('');
+    setShowPastedSyllabus(false);
+    setShowMoreOptions(false);
     setResult(null);
   };
 
   const handleGenerate = () => {
-    const finalTopic = customTopic.trim() || state.topic;
+    const finalTopic = state.customTopic.trim() || state.topic;
     if (!finalTopic || !state.subjectId || !state.goalId) return;
 
-    const chapterNote = selectedChapter ? `Chapter: ${selectedChapter.name}` : '';
-    const subCapNote = selectedSubCap?.taskHint ? `Format note: ${selectedSubCap.taskHint}` : '';
-    const toolNote = selectedSubCap?.recommendedTool ? `Recommended tool: ${selectedSubCap.recommendedTool}` : '';
-    const additionalNotes = [chapterNote, subCapNote, toolNote].filter(Boolean).join(' | ');
+    const chapterName = selectedChapter ? selectedChapter.name : undefined;
 
     const generated = generateStudyPrompt({
       classLevel: state.classLevel,
+      board: state.board,
       subjectId: state.subjectId,
       topic: finalTopic,
+      chapterName,
       goalId: state.goalId,
+      solveApproach: state.solveApproach,
+      pastedSyllabus: state.pastedSyllabus,
       styleId: state.styleId,
-      examFocus: state.examFocus,
-      additionalNotes,
+      examFocus: state.examFocus
     });
 
     saveStoredProfile({ classLevel: state.classLevel, board: state.board });
@@ -317,31 +365,14 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
     }, 100);
   };
 
-  const handleReset = () => {
-    setState(prev => ({
-      ...prev,
-      subjectId: '',
-      chapterId: '',
-      topic: '',
-      capabilityId: '',
-      subCapabilityId: '',
-      goalId: '',
-      styleId: 'simple',
-      examFocus: true,
-    }));
-    setCustomTopic('');
-    setChapterSearch('');
-    setTopicSearch('');
-    setResult(null);
-    setShowStyleOptions(false);
-  };
-
   const handleStickyCopy = async () => {
     if (!result) return;
     try {
-      await navigator.clipboard.writeText(result.fullPrompt);
-      setCopiedSticky(true);
-      setTimeout(() => setCopiedSticky(false), 2500);
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(result.fullPrompt);
+        setCopiedSticky(true);
+        setTimeout(() => setCopiedSticky(false), 2500);
+      }
     } catch {
       setCopiedSticky(true);
       setTimeout(() => setCopiedSticky(false), 2500);
@@ -349,477 +380,527 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="space-y-4 sm:space-y-6">
 
-      {/* ── MOBILE PROGRESS INDICATOR ────────────────────────────────────── */}
+      {/* ── MOBILE PROGRESS INDICATOR ──────────────────────────────────────── */}
       <MobileStepIndicator currentStep={currentStepNumber} label={currentStepLabel} />
 
-      {/* ── STEP 1 + 2: Class & Board ─────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+      {/* ── STEP 1: CLASS AND BOARD ────────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          {/* Class selection */}
           <div>
-            <StepLabel n={1} label="Who are you?" done={hasClass} />
+            <StepLabel n={1} label="Class" done={Boolean(state.classLevel)} />
             <div className="flex flex-wrap gap-2">
               {CLASS_LEVELS.map(cl => (
                 <Chip
                   key={cl.value}
                   id={`class-${cl.value}`}
                   selected={state.classLevel === cl.value}
-                  onClick={() => {
-                    update('classLevel', cl.value as ClassLevel);
-                    setState(prev => ({ ...prev, subjectId: '', chapterId: '', topic: '' }));
-                    setCustomTopic('');
-                  }}
+                  onClick={() => handleClassChange(cl.value as ClassLevel)}
                 >
                   {cl.label}
                 </Chip>
               ))}
               <div
                 id="class-11-coming-soon"
-                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
-                title="Class 11 syllabus support is coming soon!"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
+                title="Class 11 syllabus support is coming in a future release"
                 aria-disabled="true"
               >
                 <span>Class 11</span>
-                <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b] border border-[#c9a227]/30">
+                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b]">
                   Soon
                 </span>
               </div>
               <div
                 id="class-12-coming-soon"
-                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
-                title="Class 12 syllabus support is coming soon!"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-dashed border-[#c9a227]/70 bg-[#fffdf5] text-[#7a5b0b] cursor-not-allowed select-none min-h-[44px]"
+                title="Class 12 syllabus support is coming in a future release"
                 aria-disabled="true"
               >
                 <span>Class 12</span>
-                <span className="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b] border border-[#c9a227]/30">
+                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#c9a227]/20 text-[#7a5b0b]">
                   Soon
                 </span>
               </div>
             </div>
-            <p className="text-[11px] text-[#7a5b0b] mt-2 flex items-center gap-1 font-medium">
-              <span>🎓</span>
-              <span><strong>Classes 11 &amp; 12 — Coming Soon!</strong> Current toolkit supports Classes 8–10.</span>
-            </p>
           </div>
 
+          {/* Board selection */}
           <div>
-            <StepLabel n={2} label="Which board?" done={hasBoard} />
+            <StepLabel n={1} label="Board" done={Boolean(state.board)} />
             <div className="flex flex-wrap gap-2">
               {BOARDS.map(b => (
                 <Chip
                   key={b.id}
                   id={`board-${b.id}`}
                   selected={state.board === b.id}
-                  onClick={() => {
-                    update('board', b.id);
-                    setState(prev => ({ ...prev, subjectId: '', chapterId: '', topic: '' }));
-                    setCustomTopic('');
-                  }}
+                  onClick={() => handleBoardChange(b.id)}
                 >
                   <span aria-hidden="true">{b.emoji}</span>
                   {b.label}
                 </Chip>
               ))}
             </div>
-            {state.board === 'other' ? (
-              <div className="mt-2.5 p-3 rounded-xl bg-[#e8f6fa] border border-[#2fa8cc]/30 text-xs text-[#0f3557] space-y-1">
-                <p className="font-bold flex items-center gap-1.5 text-[#1f4e79]">
-                  <span>💡</span>
-                  <span>How to use your custom syllabus:</span>
-                </p>
-                <p className="text-[11px] text-[#5a6b7b] leading-relaxed">
-                  Pasting clean chapter text, numbered bullet points, or attaching a digital text PDF works best with AI. Avoid blurry photos so formulas and equations aren&apos;t misread!
-                </p>
-              </div>
-            ) : state.board !== 'cbse' ? (
+
+            {/* Board transparent curriculum note */}
+            {state.board === 'icse' && (
               <p className="text-[11px] text-[#5a6b7b] mt-2 italic">
-                ℹ️ Standard NCERT benchmark syllabus shown. You can pick any chapter below or enter your exact school topic in Step 5.
+                📘 Showing NCERT benchmark curriculum reference for Class {state.classLevel}. You can also type your custom chapter or paste syllabus text below.
               </p>
-            ) : null}
+            )}
+            {state.board === 'state' && (
+              <p className="text-[11px] text-[#5a6b7b] mt-2 italic">
+                🏫 Showing NCERT benchmark curriculum reference. You can pick any chapter below or enter your exact state textbook topic.
+              </p>
+            )}
+            {state.board === 'other' && (
+              <p className="text-[11px] text-[#5a6b7b] mt-2 italic">
+                📄 Using custom syllabus mode. Pick a core subject below and paste your exact chapter or topic text.
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── STEP 3: Subject ──────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs">
-        <StepLabel n={3} label="What are you studying?" done={hasSubject} />
+      {/* ── STEP 2: SUBJECT ────────────────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-xs">
+        <StepLabel n={2} label="Subject" done={hasSubject} />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
           {currSubjects.map(sub => {
-            const sel = state.subjectId === sub.id;
+            const isSelected = state.subjectId === sub.id;
             return (
               <button
                 key={sub.id}
                 type="button"
-                aria-pressed={sel}
-                onClick={() => {
-                  setState(prev => ({ ...prev, subjectId: sub.id, chapterId: '', topic: '' }));
-                  setCustomTopic('');
-                  setResult(null);
-                }}
+                aria-pressed={isSelected}
+                onClick={() => handleSubjectChange(sub.id)}
                 className={`
-                  p-3 sm:p-3.5 rounded-xl border text-center flex flex-col items-center gap-1.5 sm:gap-2
-                  transition-all duration-150 cursor-pointer group min-h-[48px] focus-visible:outline-2
+                  p-3 sm:p-3.5 rounded-xl border text-center flex flex-col items-center gap-2
+                  transition-all duration-150 cursor-pointer min-h-[48px] focus-visible:outline-2
                   focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-2
-                  ${sel
+                  ${isSelected
                     ? 'bg-[#e8f6fa] border-[#2fa8cc] ring-2 ring-[#2fa8cc]/25 shadow-xs'
                     : 'bg-[#fafbfc] border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:bg-[#e8f6fa]/40'
                   }
                 `}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${sel ? 'bg-white text-[#1f4e79] shadow-xs' : 'bg-[#eef2f6] text-[#5a6b7b]'}`}>
+                <div
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    isSelected ? 'bg-white text-[#1f4e79] shadow-xs' : 'bg-[#eef2f6] text-[#5a6b7b]'
+                  }`}
+                >
                   <StudyIcon name={sub.id} className="w-4 h-4" />
                 </div>
-                <span className={`text-xs font-bold font-display leading-tight ${sel ? 'text-[#1f4e79]' : 'text-[#1a1a1a] group-hover:text-[#1f4e79]'}`}>
+                <span
+                  className={`text-xs font-bold font-display leading-tight ${
+                    isSelected ? 'text-[#1f4e79]' : 'text-[#1a1a1a]'
+                  }`}
+                >
                   {sub.name}
                 </span>
-                {sel && <Check className="w-3 h-3 text-[#2fa8cc]" aria-hidden="true" />}
+                {isSelected && <Check className="w-3 h-3 text-[#2fa8cc]" aria-hidden="true" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* ── STEP 4: Chapter (progressive — revealed after subject) ───────── */}
-      {showChapters && (
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-            <StepLabel n={4} label={`${selectedCurrSubject?.name || 'Subject'} — Chapter`} done={!!state.chapterId} />
+      {/* ── STEP 3: CHAPTER OR CUSTOM TOPIC (Revealed after subject) ────────── */}
+      {hasSubject && (
+        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-xs space-y-4 animate-in fade-in duration-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <StepLabel
+              n={3}
+              label={`${selectedCurrSubject?.name || 'Subject'} — Chapter or Topic`}
+              done={hasTopic}
+            />
             {filteredChapters.length > 4 && (
-              <div className="relative w-full sm:w-52">
+              <div className="relative w-full sm:w-56">
                 <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
                 <input
                   type="text"
-                  placeholder="Search chapters…"
+                  placeholder="Filter chapters…"
                   value={chapterSearch}
                   onChange={e => setChapterSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[#e2e8f0] bg-white text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-none"
-                  aria-label="Search chapters"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[#e2e8f0] bg-white text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-hidden"
+                  aria-label="Filter chapters"
                 />
               </div>
             )}
           </div>
 
-          {/* Chapters grid on desktop, scrollable chips on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 sm:max-h-72 overflow-y-auto pr-1">
-            {filteredChapters.map(ch => {
-              const sel = state.chapterId === ch.id;
-              return (
-                <button
-                  key={ch.id}
-                  type="button"
-                  aria-pressed={sel}
-                  onClick={() => {
-                    setState(prev => ({ ...prev, chapterId: ch.id, topic: '' }));
-                    setCustomTopic('');
-                    setResult(null);
-                  }}
-                  className={`
-                    px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between gap-2
-                    transition-all cursor-pointer text-xs sm:text-sm min-h-[44px] focus-visible:outline-2 focus-visible:outline-[#2fa8cc]
-                    ${sel
-                      ? 'bg-[#e8f6fa] border-[#2fa8cc] text-[#1f4e79] font-bold'
-                      : 'border-[#e2e8f0] bg-[#fafbfc] text-[#1a1a1a] hover:border-[#2fa8cc]/50 hover:bg-[#e8f6fa]/30'
-                    }
-                  `}
-                >
-                  <div className="flex items-baseline gap-1.5 flex-1 min-w-0">
-                    <span className={`text-[10px] font-bold shrink-0 ${sel ? 'text-[#2fa8cc]' : 'text-[#5a6b7b]'}`}>
-                      {ch.chapterNumber}.
-                    </span>
-                    <span className="font-semibold leading-snug line-clamp-1">{ch.name}</span>
-                  </div>
-                  {sel && <Check className="w-3.5 h-3.5 text-[#2fa8cc] shrink-0" aria-hidden="true" />}
-                </button>
-              );
-            })}
-          </div>
-
-          {!state.chapterId && (
-            <button
-              type="button"
-              onClick={() => {
-                setState(prev => ({
-                  ...prev,
-                  chapterId: 'general',
-                  topic: `${selectedCurrSubject?.name} — Key Concepts`,
-                }));
-                setResult(null);
-              }}
-              className="mt-2.5 text-xs font-semibold text-[#2fa8cc] hover:text-[#1f4e79] underline underline-offset-2 cursor-pointer inline-block"
-            >
-              Not sure which chapter? → Study the full subject overview
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* ── STEP 5: Topic ──────────────────────────────────────────────────── */}
-      {showTopics && (
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-            <StepLabel n={5} label="Pick or type a topic" done={hasTopic} />
-            {availableTopics.length > 5 && (
-              <div className="relative w-full sm:w-52">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-                <input
-                  type="text"
-                  placeholder="Filter topics…"
-                  value={topicSearch}
-                  onChange={e => setTopicSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[#e2e8f0] bg-white text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-none"
-                  aria-label="Search topics"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Chapter topics */}
-          {filteredTopics.length > 0 && (
-            <div className="mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5a6b7b] block mb-1.5">
-                Topics in {selectedChapter?.name}:
+          {/* Chapter selector */}
+          {filteredChapters.length > 0 && (
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b7b] block mb-2">
+                1. Select Chapter:
               </span>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {filteredTopics.map((t, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-pressed={state.topic === t && !customTopic.trim()}
-                    onClick={() => { update('topic', t); setCustomTopic(''); }}
-                    className={`
-                      px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center
-                      focus-visible:outline-2 focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-1
-                      ${state.topic === t && !customTopic.trim()
-                        ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
-                        : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc] hover:bg-[#e8f6fa]'
-                      }
-                    `}
-                  >
-                    {state.topic === t && !customTopic.trim() && <span className="mr-1.5 font-bold">✓</span>}
-                    {t}
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                {filteredChapters.map(ch => {
+                  const isSelected = state.chapterId === ch.id;
+                  return (
+                    <button
+                      key={ch.id}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => {
+                        setState(prev => ({
+                          ...prev,
+                          chapterId: ch.id,
+                          topic: ch.topics[0] || ch.name,
+                          customTopic: ''
+                        }));
+                        setResult(null);
+                      }}
+                      className={`
+                        px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between gap-2
+                        transition-all cursor-pointer text-xs sm:text-sm min-h-[44px] focus-visible:outline-2 focus-visible:outline-[#2fa8cc]
+                        ${isSelected
+                          ? 'bg-[#e8f6fa] border-[#2fa8cc] text-[#1f4e79] font-bold'
+                          : 'border-[#e2e8f0] bg-[#fafbfc] text-[#1a1a1a] hover:border-[#2fa8cc]/50 hover:bg-[#e8f6fa]/30'
+                        }
+                      `}
+                    >
+                      <div className="flex items-baseline gap-1.5 flex-1 min-w-0">
+                        <span className={`text-[10px] font-bold shrink-0 ${isSelected ? 'text-[#2fa8cc]' : 'text-[#5a6b7b]'}`}>
+                          {ch.chapterNumber}.
+                        </span>
+                        <span className="font-semibold leading-snug line-clamp-1">{ch.name}</span>
+                      </div>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-[#2fa8cc] shrink-0" aria-hidden="true" />}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Fallback sample topics */}
-          {!selectedChapter && sampleTopics.length > 0 && (
-            <div className="mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5a6b7b] block mb-1.5">
-                Popular topics for Class {state.classLevel}:
+          {/* Specific Topic Chips */}
+          {filteredTopics.length > 0 && (
+            <div className="pt-2 border-t border-[#f0f4f8]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b7b] block mb-2">
+                2. Sub-topics in {selectedChapter?.name}:
               </span>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {sampleTopics.map((t, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-pressed={state.topic === t && !customTopic.trim()}
-                    onClick={() => { update('topic', t); setCustomTopic(''); }}
-                    className={`
-                      px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center
-                      focus-visible:outline-2 focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-1
-                      ${state.topic === t && !customTopic.trim()
-                        ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
-                        : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc] hover:bg-[#e8f6fa]'
-                      }
-                    `}
-                  >
-                    {state.topic === t && !customTopic.trim() && <span className="mr-1.5 font-bold">✓</span>}
-                    {t}
-                  </button>
-                ))}
+                {filteredTopics.map((t, idx) => {
+                  const isSelected = state.topic === t && !state.customTopic.trim();
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      aria-pressed={isSelected}
+                      onClick={() => {
+                        setState(prev => ({ ...prev, topic: t, customTopic: '' }));
+                        setResult(null);
+                      }}
+                      className={`
+                        px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center
+                        focus-visible:outline-2 focus-visible:outline-[#2fa8cc]
+                        ${isSelected
+                          ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
+                          : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc] hover:bg-[#e8f6fa]'
+                        }
+                      `}
+                    >
+                      {isSelected && <Check className="w-3 h-3 mr-1 text-white" />}
+                      {t}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {/* Custom topic input */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="custom-topic" className="text-[10px] font-bold uppercase tracking-wider text-[#5a6b7b]">
-                Or type a specific question / concept:
-              </label>
-              <span className="text-[10px] text-[#2fa8cc] font-semibold hidden sm:inline">
-                💡 Paste 2–4 chapter topics or questions
-              </span>
-            </div>
+          <div className="space-y-1.5 pt-2 border-t border-[#f0f4f8]">
+            <label htmlFor="custom-topic-input" className="text-xs font-bold text-[#1f4e79] flex items-center gap-1.5">
+              <span>✍️</span>
+              <span>Or type a specific doubt, question, or concept:</span>
+            </label>
             <input
-              id="custom-topic"
+              id="custom-topic-input"
               type="text"
-              value={customTopic}
+              value={state.customTopic}
               onChange={e => {
-                setCustomTopic(e.target.value);
-                if (e.target.value.trim()) update('topic', '');
+                setState(prev => ({
+                  ...prev,
+                  customTopic: e.target.value,
+                  topic: e.target.value.trim() ? '' : prev.topic
+                }));
                 setResult(null);
               }}
-              placeholder="e.g. 1. Chemical reactions definition, 2. Balancing equations, 3. Types of reactions…"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-xs sm:text-sm text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-none placeholder:text-slate-400"
+              placeholder="e.g. Balancing redox equations, Fleming's left hand rule, Quadratic formula derivation…"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] bg-white text-xs sm:text-sm text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-hidden"
             />
-            <p className="text-[10.5px] text-[#5a6b7b] leading-tight">
-              💡 <strong>Best result:</strong> You can paste your school&apos;s exact chapter bullet points here. Clean text helps AI give spot-on, syllabus-accurate notes.
-            </p>
+            {state.customTopic.trim() && (
+              <p className="text-[11px] text-emerald-700 font-medium">
+                ✓ Using your custom topic: &ldquo;{state.customTopic.trim()}&rdquo;
+              </p>
+            )}
+          </div>
+
+          {/* Optional: Paste syllabus or chapter text */}
+          <div className="pt-2 border-t border-[#f0f4f8]">
+            <button
+              type="button"
+              onClick={() => setShowPastedSyllabus(v => !v)}
+              className="text-xs font-bold text-[#2fa8cc] hover:text-[#1f4e79] flex items-center gap-1.5 cursor-pointer min-h-[44px]"
+              aria-expanded={showPastedSyllabus}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>{showPastedSyllabus ? 'Hide pasted syllabus text' : '+ Optional: Paste syllabus or chapter text'}</span>
+              {showPastedSyllabus ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+
+            {showPastedSyllabus && (
+              <div className="mt-2.5 p-3.5 rounded-xl bg-[#fafbfc] border border-[#2fa8cc]/30 space-y-2 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between text-xs text-[#5a6b7b]">
+                  <span className="font-semibold text-[#1f4e79]">Paste your syllabus bullet points:</span>
+                  <span>{state.pastedSyllabus.length} characters</span>
+                </div>
+                <textarea
+                  rows={4}
+                  value={state.pastedSyllabus}
+                  onChange={e => {
+                    setState(prev => ({ ...prev, pastedSyllabus: e.target.value }));
+                    setResult(null);
+                  }}
+                  placeholder="Paste excerpt from your textbook, school worksheet, or chapter syllabus here. This text will be included in the prompt as reference content for the external AI."
+                  className="w-full p-2.5 rounded-lg border border-[#e2e8f0] bg-white text-xs font-mono text-[#1a1a1a] focus:ring-2 focus:ring-[#2fa8cc] focus:outline-hidden"
+                />
+                <p className="text-[11px] text-[#5a6b7b] leading-relaxed">
+                  ℹ️ <strong>How this works:</strong> This text is copied directly into the prompt as reference material to anchor the AI to your school&apos;s exact wording. It is stored only in your browser.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* ── STEP 6: Capability + Sub-capability ─────────────────────────── */}
-      {showGoal && (
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs animate-in fade-in slide-in-from-top-1 duration-200">
-          <StepLabel n={6} label="What do you want AI to help you do?" done={hasGoal} />
+      {/* ── STEP 4: LEARNING GOAL (Revealed after topic) ───────────────────── */}
+      {hasTopic && (
+        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-xs space-y-4 animate-in fade-in duration-200">
+          <StepLabel n={4} label="Learning Goal" done={hasGoal} />
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5 mb-3">
-            {CAPABILITY_CATEGORIES.map(cat => {
-              const sel = state.capabilityId === cat.id;
+          {/* 4 PRIMARY GOALS */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {PRIMARY_GOALS.map(goal => {
+              const isSelected = state.goalId === goal.id;
               return (
                 <button
-                  key={cat.id}
+                  key={goal.id}
                   type="button"
-                  aria-pressed={sel}
-                  aria-expanded={sel}
-                  onClick={() => selectCapability(cat.id)}
+                  aria-pressed={isSelected}
+                  onClick={() => handleGoalSelect(goal.id)}
                   className={`
-                    p-3 sm:p-3.5 rounded-xl border text-left transition-all duration-150 cursor-pointer min-h-[50px]
-                    focus-visible:outline-2 focus-visible:outline-[#2fa8cc] focus-visible:outline-offset-2
-                    ${sel
-                      ? `${cat.colorBg} ${cat.colorBorder} border-2 shadow-sm`
-                      : 'bg-[#fafbfc] border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:bg-[#f0f7fc]'
+                    p-3.5 sm:p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer min-h-[52px]
+                    focus-visible:outline-2 focus-visible:outline-[#2fa8cc]
+                    ${isSelected
+                      ? 'bg-[#e8f6fa] border-[#2fa8cc] ring-2 ring-[#2fa8cc]/30 shadow-xs'
+                      : 'bg-[#fafbfc] border-[#e2e8f0] hover:border-[#2fa8cc]/50 hover:bg-[#e8f6fa]/30'
                     }
                   `}
                 >
-                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center mb-1.5 sm:mb-2 ${
-                    sel ? 'bg-white shadow-xs' : 'bg-[#eef2f6] text-[#1f4e79]'
-                  }`}>
-                    <StudyIcon name={cat.id} className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${sel ? cat.colorText : 'text-[#1f4e79]'}`} />
+                  <span className="text-xl sm:text-2xl shrink-0 mt-0.5" aria-hidden="true">
+                    {goal.icon}
+                  </span>
+                  <div className="space-y-0.5 min-w-0">
+                    <span className={`text-sm font-bold block ${isSelected ? 'text-[#1f4e79]' : 'text-[#1a1a1a]'}`}>
+                      {goal.label}
+                    </span>
+                    <span className="text-xs text-[#5a6b7b] leading-snug block">
+                      {goal.description}
+                    </span>
                   </div>
-                  <span className={`text-xs sm:text-sm font-bold font-display block ${sel ? cat.colorText : 'text-[#1a1a1a]'}`}>
-                    {cat.label}
-                  </span>
-                  <span className={`text-[10px] sm:text-[11px] leading-snug mt-0.5 block line-clamp-1 sm:line-clamp-none ${sel ? cat.colorText + ' opacity-75' : 'text-[#5a6b7b]'}`}>
-                    {cat.tagline}
-                  </span>
+                  {isSelected && <Check className="w-4 h-4 text-[#2fa8cc] shrink-0 ml-auto" />}
                 </button>
               );
             })}
           </div>
 
-          {/* Sub-capabilities — revealed when category selected */}
-          {selectedCap && (
-            <div className={`${selectedCap.colorBg} rounded-xl p-3 sm:p-3.5 space-y-2 animate-in fade-in duration-150 border ${selectedCap.colorBorder}`}>
-              <div className="flex items-center gap-1.5">
-                <StudyIcon name={selectedCap.id} className={`w-3.5 h-3.5 ${selectedCap.colorText}`} />
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${selectedCap.colorText}`}>
-                  Choose a specific output:
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {selectedCap.subs.map(sub => {
-                  const sel = state.subCapabilityId === sub.id;
+          {/* If "Help me solve" selected: show 3 problem-solving options with Hints First default */}
+          {state.goalId === 'solve-problem' && (
+            <div className="p-3.5 sm:p-4 rounded-xl bg-[#e8f6fa] border border-[#2fa8cc]/30 space-y-2.5 animate-in fade-in duration-150">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1f4e79] block">
+                Choose Problem Solving Approach:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {SOLVE_APPROACHES.map(app => {
+                  const isSelected = state.solveApproach === app.id;
                   return (
                     <button
-                      key={sub.id}
+                      key={app.id}
                       type="button"
-                      aria-pressed={sel}
-                      onClick={() => selectSubCapability(sub)}
+                      aria-pressed={isSelected}
+                      onClick={() => {
+                        setState(prev => ({ ...prev, solveApproach: app.id }));
+                        setResult(null);
+                      }}
                       className={`
-                        inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold
-                        border transition-all cursor-pointer min-h-[40px]
-                        ${sel
-                          ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-sm'
-                          : 'bg-white border-[#e2e8f0] text-[#1a1a1a] hover:border-[#1f4e79] hover:bg-white/80'
+                        p-2.5 rounded-lg border text-left transition-all cursor-pointer min-h-[44px]
+                        ${isSelected
+                          ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
+                          : 'bg-white border-[#e2e8f0] text-[#1a1a1a] hover:border-[#2fa8cc]'
                         }
                       `}
                     >
-                      <StudyIcon name={sub.id} className="w-3.5 h-3.5" />
-                      {sub.label}
-                      {sel && <Check className="w-3 h-3" aria-hidden="true" />}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold">{app.label}</span>
+                        {isSelected && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      <span className={`text-[10px] block mt-0.5 line-clamp-2 ${isSelected ? 'text-white/80' : 'text-[#5a6b7b]'}`}>
+                        {app.tagline}
+                      </span>
                     </button>
                   );
                 })}
               </div>
-
-              {selectedSubCap?.taskHint && (
-                <p className={`text-[11px] sm:text-xs leading-relaxed italic ${selectedCap.colorText} opacity-80 pt-0.5`}>
-                  💡 {selectedSubCap.taskHint}
-                </p>
-              )}
             </div>
           )}
-        </div>
-      )}
 
-      {/* ── STEP 7: Style (optional, progressive) ────────────────────────── */}
-      {showStyleAndGenerate && (
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-2xs animate-in fade-in duration-200">
-          <div className="flex items-center justify-between mb-2 sm:mb-3">
-            <StepLabel n={7} label="Style (optional)" done={false} />
+          {/* ── "MORE OPTIONS" ACCORDION ── */}
+          <div className="pt-2 border-t border-[#f0f4f8]">
             <button
               type="button"
-              onClick={() => setShowStyleOptions(v => !v)}
-              className="text-xs font-semibold text-[#2fa8cc] hover:text-[#1f4e79] flex items-center gap-1 cursor-pointer"
-              aria-expanded={showStyleOptions}
+              onClick={() => setShowMoreOptions(v => !v)}
+              className="text-xs font-bold text-[#1f4e79] hover:text-[#2fa8cc] flex items-center justify-between w-full py-2 cursor-pointer min-h-[44px]"
+              aria-expanded={showMoreOptions}
             >
-              {showStyleOptions ? 'Hide' : 'Customise'}
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showStyleOptions ? 'rotate-180' : ''}`} aria-hidden="true" />
+              <span className="flex items-center gap-1.5">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#2fa8cc]" />
+                <span>More options (creative tasks, coding, explanation style)</span>
+              </span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${showMoreOptions ? 'rotate-180' : ''}`} />
             </button>
-          </div>
 
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
-            <span className="text-xs text-[#5a6b7b] hidden sm:inline">Explanation style:</span>
-            {(showStyleOptions ? EXPLANATION_STYLES : EXPLANATION_STYLES.slice(0, 3)).map(st => (
-              <button
-                key={st.id}
-                type="button"
-                aria-pressed={state.styleId === st.id}
-                onClick={() => update('styleId', st.id)}
-                className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center focus-visible:outline-2 focus-visible:outline-[#2fa8cc] ${
-                  state.styleId === st.id
-                    ? 'bg-[#2fa8cc] text-white border-[#2fa8cc] shadow-xs'
-                    : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa]'
-                }`}
-              >
-                {st.label}
-              </button>
-            ))}
-          </div>
+            {showMoreOptions && (
+              <div className="space-y-4 pt-3 animate-in fade-in duration-150">
+                {/* Advanced Goals: Creative & Presentations */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b7b] block">
+                    Creative &amp; Visual Tasks:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {[
+                      { id: 'create-poster', label: 'Poster layout', icon: '🖼️' },
+                      { id: 'create-chart', label: 'Comparison chart', icon: '📊' },
+                      { id: 'create-diagram', label: 'Diagram description', icon: '📐' },
+                      { id: 'create-mindmap', label: 'Mind map', icon: '🗺️' },
+                      { id: 'create-presentation', label: 'Presentation outline', icon: '🎤' }
+                    ].map(g => (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => handleGoalSelect(g.id)}
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 ${
+                          state.goalId === g.id
+                            ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
+                            : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa]'
+                        }`}
+                      >
+                        <span>{g.icon}</span>
+                        <span>{g.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-          {showStyleOptions && (
-            <label htmlFor="exam-focus" className="mt-2.5 flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#1f4e79]">
-              <input
-                id="exam-focus"
-                type="checkbox"
-                checked={state.examFocus}
-                onChange={e => update('examFocus', e.target.checked)}
-                className="w-4 h-4 accent-[#ff6b00] rounded"
-              />
-              🎯 Add board exam &amp; scoring focus (Class 10)
-            </label>
-          )}
+                {/* Advanced Goals: Coding & Logic */}
+                <div className="space-y-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b7b] block">
+                    Coding &amp; Practical Projects:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {[
+                      { id: 'code', label: 'Write code', icon: '⌨️' },
+                      { id: 'debug', label: 'Debug code', icon: '🐛' },
+                      { id: 'explain-code', label: 'Explain code', icon: '📖' },
+                      { id: 'project-idea', label: 'Science project idea', icon: '💡' },
+                      { id: 'project-structure', label: 'Project roadmap', icon: '📁' }
+                    ].map(g => (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => handleGoalSelect(g.id)}
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] flex items-center gap-1.5 ${
+                          state.goalId === g.id
+                            ? 'bg-[#1f4e79] text-white border-[#1f4e79] shadow-xs'
+                            : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa]'
+                        }`}
+                      >
+                        <span>{g.icon}</span>
+                        <span>{g.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Explanation Style Selector */}
+                <div className="space-y-2 pt-2 border-t border-[#f0f4f8]">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#5a6b7b] block">
+                    Explanation Style:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {EXPLANATION_STYLES.map(st => (
+                      <button
+                        key={st.id}
+                        type="button"
+                        onClick={() => {
+                          setState(prev => ({ ...prev, styleId: st.id }));
+                          setResult(null);
+                        }}
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer min-h-[44px] ${
+                          state.styleId === st.id
+                            ? 'bg-[#2fa8cc] text-white border-[#2fa8cc] shadow-xs'
+                            : 'bg-[#fafbfc] border-[#e2e8f0] text-[#1a1a1a] hover:bg-[#e8f6fa]'
+                        }`}
+                      >
+                        {st.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Exam focus toggle */}
+                <div className="pt-2 border-t border-[#f0f4f8]">
+                  <label htmlFor="exam-focus-toggle" className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#1f4e79] min-h-[44px]">
+                    <input
+                      id="exam-focus-toggle"
+                      type="checkbox"
+                      checked={state.examFocus}
+                      onChange={e => {
+                        setState(prev => ({ ...prev, examFocus: e.target.checked }));
+                        setResult(null);
+                      }}
+                      className="w-4 h-4 accent-[#ff6b00] rounded"
+                    />
+                    <span>🎯 Include school term/board exam scoring focus</span>
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* ── PROMPT PREVIEW (compact preview before generate) ────────────── */}
-      {showPromptPreview && !result && (
-        <div className="animate-in fade-in duration-200">
-          <PromptPreview state={state} customTopic={customTopic} />
-        </div>
-      )}
-
-      {/* ── PRIVACY WARNING ──────────────────────────────────────────────── */}
-      <div className="flex items-start gap-2.5 p-3 sm:p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
-        <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+      {/* ── PRIVACY NOTE ───────────────────────────────────────────────────── */}
+      <div className="flex items-start gap-2.5 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-[#5a6b7b]">
+        <ShieldAlert className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" aria-hidden="true" />
         <p className="leading-relaxed">
-          <strong>🔒 Stay safe:</strong> Never share your real name, phone number, address, passwords, or private photos in any AI tool.
+          <strong>Privacy reminder:</strong> This toolkit prepares your prompt locally in your browser. When you copy it into external AI tools, never share your real phone number, passwords, or home address.
         </p>
       </div>
 
-      {/* ── GENERATE BUTTON (sticky) ─────────────────────────────────────── */}
+      {/* ── PRIMARY ACTION: PREPARE STUDY PROMPT ─────────────────────────────── */}
       <div className="sticky bottom-3 sm:bottom-4 z-20">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleGenerate}
             disabled={!isReady}
+            id="prepare-study-prompt-btn"
             className={`
               flex-1 py-3.5 sm:py-4 px-5 sm:px-6 rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all duration-200 shadow-lg min-h-[48px]
               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ff6b00]
@@ -832,20 +913,23 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
           >
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
             <span>
-              {!hasSubject ? 'Pick a subject first' :
-               !hasTopic ? 'Pick or type a topic' :
-               !hasGoal ? 'Pick what AI should do' :
-               '✨ Generate My Study Prompt'}
+              {!hasSubject
+                ? 'Select a subject first'
+                : !hasTopic
+                ? 'Pick or type a topic'
+                : !hasGoal
+                ? 'Choose your learning goal'
+                : '✨ Prepare Study Prompt'}
             </span>
           </button>
 
-          {(hasSubject || hasTopic || hasGoal) && (
+          {(hasSubject || hasTopic) && (
             <button
               type="button"
               onClick={handleReset}
               className="p-3.5 sm:p-4 rounded-xl bg-white border border-[#e2e8f0] text-[#5a6b7b] hover:text-[#1f4e79] hover:border-[#2fa8cc] transition-all cursor-pointer min-h-[48px] focus-visible:outline-2 focus-visible:outline-[#2fa8cc]"
               aria-label="Reset all selections and start over"
-              title="Start over"
+              title="Reset selections"
             >
               <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
             </button>
@@ -854,22 +938,14 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
 
         {!isReady && (hasSubject || hasTopic) && (
           <p className="text-center text-[11px] text-[#5a6b7b] mt-1.5" aria-live="polite">
-            {!hasTopic ? '→ Pick or type a topic above' : !hasGoal ? '→ Choose a goal (🧠 Understand, 🎨 Create, etc.)' : ''}
+            {!hasTopic ? '→ Pick or type a topic in Step 3' : !hasGoal ? '→ Choose one of the 4 primary goals in Step 4' : ''}
           </p>
         )}
       </div>
 
-      {/* ── PROMPT RESULT ─────────────────────────────────────────────────── */}
+      {/* ── PROMPT RESULT SCREEN ───────────────────────────────────────────── */}
       {result && (
-        <div ref={resultRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-4 pt-2 pb-24 sm:pb-0">
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-[#e2e8f0]" aria-hidden="true" />
-            <span className="text-xs font-bold text-[#2fa8cc] uppercase tracking-wider px-3 py-1 rounded-full bg-[#e8f6fa]">
-              ✨ Your AI Study Prompt
-            </span>
-            <div className="h-px flex-1 bg-[#e2e8f0]" aria-hidden="true" />
-          </div>
-
+        <div ref={resultRef} className="animate-in fade-in duration-300 space-y-4 pt-2 pb-24 sm:pb-0">
           <PromptResultCard result={result} />
 
           {/* Mobile Sticky Quick Action Bar when prompt is ready */}
@@ -877,7 +953,7 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
             <button
               type="button"
               onClick={handleStickyCopy}
-              className={`flex-1 py-3 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 py-3 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer min-h-[44px] ${
                 copiedSticky ? 'bg-emerald-600 text-white' : 'bg-[#ff6b00] text-white shadow-md'
               }`}
             >
@@ -889,32 +965,35 @@ export function SinglePageBuilder({ initialCapabilityId, initialSubCapabilityId 
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleStickyCopy}
-              className="flex-1 py-3 px-3 rounded-xl font-bold text-xs bg-white text-[#1f4e79] flex items-center justify-center gap-1.5 shadow-md"
+              className="flex-1 py-3 px-3 rounded-xl font-bold text-xs bg-white text-[#1f4e79] flex items-center justify-center gap-1.5 shadow-md min-h-[44px]"
             >
               <Bot className="w-3.5 h-3.5 text-[#2fa8cc]" />
-              <span>Use in ChatGPT</span>
+              <span>Paste in ChatGPT</span>
               <ExternalLink className="w-3 h-3 opacity-60" />
             </a>
           </div>
 
-          {/* Step 3 — Verify CTA */}
+          {/* Verification CTA Banner */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[#0d1f35] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#2fa8cc]">Step 3: Check &amp; Verify</span>
-              <p className="text-sm font-bold">Got your answer? Cross-check it.</p>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#2fa8cc]">
+                Step 3: Check &amp; Verify
+              </span>
+              <p className="text-sm font-bold">Got your answer? Cross-check it against your textbook.</p>
               <p className="text-xs text-white/70 leading-relaxed">
-                Always verify dates, facts, and formulas against your official textbook.
+                Remember: AI answers questions, but you must verify facts, formulas, and units.
               </p>
             </div>
             <Link
               href="/verify"
               className="shrink-0 inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-[#ff6b00] hover:bg-orange-600 text-white text-xs sm:text-sm font-bold transition-all min-h-[44px]"
             >
-              <span>Check Before You Trust AI →</span>
+              <span>View Verification Guide →</span>
             </Link>
           </div>
         </div>
       )}
+
     </div>
   );
 }

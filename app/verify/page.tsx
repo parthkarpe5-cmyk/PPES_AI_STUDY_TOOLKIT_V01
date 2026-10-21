@@ -3,9 +3,9 @@ import { VerificationChecklist } from '@/components/VerificationChecklist';
 import { ShieldAlert } from 'lucide-react';
 
 export const metadata = {
-  title: 'Check My Answer — 5-Step Verification Guide | Prarambh Path',
+  title: 'Check My Answer — 3-Step Verification Guide | Prarambh Path',
   description:
-    'Don’t blindly trust AI. Learn the 5-step verification checklist to verify formulas, dates, and concepts against your official textbook.',
+    'Don’t blindly trust AI. Learn the 3 practical checking steps to verify formulas, dates, and concepts against your official textbook.',
 };
 
 export default function VerifyPage() {
@@ -15,7 +15,7 @@ export default function VerifyPage() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#ff6b00]/10 text-[#d95700] text-xs font-bold border border-[#ff6b00]/30 uppercase tracking-wider">
           <ShieldAlert className="w-4 h-4 text-[#ff6b00]" />
-          <span>Step 3: Check & Verify</span>
+          <span>Step 3: Check &amp; Verify</span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1f4e79] tracking-tight font-display">
@@ -23,7 +23,7 @@ export default function VerifyPage() {
         </h1>
 
         <p className="text-sm sm:text-base text-[#5a6b7b] max-w-xl mx-auto leading-relaxed">
-          AI can make mistakes, hallucinate fake dates, and generate incorrect formulas. Always verify important information before using it in class or exams.
+          AI models can make confident mistakes, hallucinate fake dates, and generate incorrect formulas. Build the habit of running these three practical checks before writing anything in your school notebook.
         </p>
       </div>
 

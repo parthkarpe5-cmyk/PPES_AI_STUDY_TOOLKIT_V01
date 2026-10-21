@@ -33,7 +33,7 @@ export function Navbar() {
   const navLinks = [
     { href: '/', label: 'Home', icon: BookOpen },
     { href: '/#study-builder', label: 'Build Prompt', icon: Sparkles, highlight: true },
-    { href: '/which-ai', label: 'Which AI?', icon: Compass },
+    { href: '/which-ai', label: 'AI Tools', icon: Compass },
     { href: '/verify', label: 'Check & Verify', icon: CheckCircle },
   ];
 

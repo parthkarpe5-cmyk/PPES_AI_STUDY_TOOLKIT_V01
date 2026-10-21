@@ -6,36 +6,129 @@ export interface GoalOption {
   taskInstruction: string;
   outputStructure: string[];
   sampleQuestionClosing?: string;
+  isPrimary?: boolean;
 }
 
+export type SolveApproach = 'hints-first' | 'example-first' | 'worked-solution';
+
+export interface SolveApproachOption {
+  id: SolveApproach;
+  label: string;
+  tagline: string;
+  instruction: string;
+}
+
+export const SOLVE_APPROACHES: SolveApproachOption[] = [
+  {
+    id: 'hints-first',
+    label: 'Hints first',
+    tagline: 'Give me one hint at a time. Ask me to try before showing the solution.',
+    instruction: 'Give me one hint at a time. Ask me to try before showing the solution.'
+  },
+  {
+    id: 'example-first',
+    label: 'Explain with an example',
+    tagline: 'Explain the underlying method using a similar worked example first.',
+    instruction: 'Explain the underlying method using a similar worked example first, then invite me to try my specific problem.'
+  },
+  {
+    id: 'worked-solution',
+    label: 'Worked solution',
+    tagline: 'Step-by-step solution showing method, formula, units, and checks.',
+    instruction: 'Provide a complete step-by-step worked solution showing the method, formula, calculations with units, and a verification check.'
+  }
+];
+
 export const STUDY_GOALS: GoalOption[] = [
+  // ─── 4 PRIMARY GOALS ────────────────────────────────────────────────────────
   {
     id: 'understand-topic',
-    label: 'Understand a topic',
+    label: 'Understand it',
     icon: '💡',
-    description: 'Break down the core concept from first principles with clarity.',
-    taskInstruction: 'Explain the core principles and concepts from scratch, making sure every fundamental idea is crystal clear.',
+    description: 'Break down the core concept from first principles with clarity and everyday analogies.',
+    taskInstruction: 'Explain the core principles and concepts from scratch, making sure every fundamental idea is clear and intuitive.',
     outputStructure: [
       'Intuitive overview & why this concept matters',
       'Step-by-step breakdown of core concepts',
       'Key definitions and terminology explained simply',
-      'Real-world analogies and illustrations',
+      'Real-world analogies and everyday illustrations',
       'Summary recap'
     ],
-    sampleQuestionClosing: 'End with 3 check-for-understanding questions to test if I grasp the basics.'
+    sampleQuestionClosing: 'End with 2 check-for-understanding questions to test if I grasp the basics.',
+    isPrimary: true
   },
+  {
+    id: 'practice-questions',
+    label: 'Practise questions',
+    icon: '❓',
+    description: 'Test your understanding with questions graded from easy to challenging.',
+    taskInstruction: 'Create a balanced set of practice questions matching the school syllabus. Crucial: Do NOT give the answers, solutions, or hints right away. Withhold all answers until I have submitted my attempts, then evaluate my answers and explain the solutions.',
+    outputStructure: [
+      'Set of graded questions (MCQs, short conceptual, and one application question)',
+      'Marking values or difficulty level indicated for each question',
+      'Explicit pause: "Please attempt these questions first. Reply with your answers when ready for grading."'
+    ],
+    sampleQuestionClosing: 'Do not display the answer key until I reply with my attempt.',
+    isPrimary: true
+  },
+  {
+    id: 'generate-questions', // Alias for backwards compatibility
+    label: 'Practise questions',
+    icon: '❓',
+    description: 'Test your understanding with questions graded from easy to challenging.',
+    taskInstruction: 'Create a balanced set of practice questions matching the school syllabus. Crucial: Do NOT give the answers, solutions, or hints right away. Withhold all answers until I have submitted my attempts, then evaluate my answers and explain the solutions.',
+    outputStructure: [
+      'Set of graded questions (MCQs, short conceptual, and one application question)',
+      'Marking values or difficulty level indicated for each question',
+      'Explicit pause: "Please attempt these questions first. Reply with your answers when ready for grading."'
+    ],
+    sampleQuestionClosing: 'Do not display the answer key until I reply with my attempt.',
+    isPrimary: true
+  },
+  {
+    id: 'revise',
+    label: 'Revise',
+    icon: '🔄',
+    description: 'Fast active-recall recap for quick revision before a class test.',
+    taskInstruction: 'Conduct a rapid active recall revision summary designed to refresh memory quickly on key points.',
+    outputStructure: [
+      'Rapid-fire bullet summary of must-know facts',
+      'Formula / concept cheat sheet table with units',
+      'Differences between easily confused terms',
+      'Quick self-check questions'
+    ],
+    sampleQuestionClosing: 'End with 3 rapid-fire active-recall questions.',
+    isPrimary: true
+  },
+  {
+    id: 'solve-problem',
+    label: 'Help me solve',
+    icon: '🧩',
+    description: 'Work through numerical or conceptual problems with hints, examples, or step-by-step guidance.',
+    taskInstruction: 'Help me solve problems on this topic. By default, give me one hint at a time and ask me to try before showing the solution.',
+    outputStructure: [
+      'Identification of given data, governing formula, and required result',
+      'Socratic guidance / hint or step-by-step demonstration as requested',
+      'Units and dimensional checks at every step',
+      'One similar practice problem to test independent understanding'
+    ],
+    sampleQuestionClosing: 'Ask me to try the first step before proceeding.',
+    isPrimary: true
+  },
+
+  // ─── ADVANCED GOALS (Under "More options") ──────────────────────────────────
   {
     id: 'make-short-notes',
     label: 'Make short notes',
     icon: '📝',
     description: 'Crisp 1-page summary with headings, key terms, and bullet points.',
-    taskInstruction: 'Create ultra-concise, high-yield revision notes suitable for quick 5-minute reference.',
+    taskInstruction: 'Create concise, high-yield revision notes suitable for quick reference.',
     outputStructure: [
       'One-sentence core concept summary',
       'Key definitions and formulas / dates in bullet points',
       'High-priority diagrams or flowcharts described textually',
       'Common pitfalls and mistakes to avoid',
-      'Top 5 memory triggers / mnemonics'
+      'Top memory triggers / mnemonics'
     ],
     sampleQuestionClosing: 'Include a 3-point quick memory checklist at the end.'
   },
@@ -46,97 +139,53 @@ export const STUDY_GOALS: GoalOption[] = [
     description: 'Comprehensive chapter guide covering all sub-topics, derivations, and examples.',
     taskInstruction: 'Produce comprehensive, well-structured study notes covering all subtopics thoroughly according to the school syllabus.',
     outputStructure: [
-      'Comprehensive topic background and scope',
+      'Topic background and scope',
       'Detailed sub-topic explanations with clear headings',
       'Step-by-step derivations / timelines / biological mechanisms',
       'Standard textbook formulas, SI units, and conditions',
       'Practice examples with full working'
     ],
-    sampleQuestionClosing: 'End with 5 comprehensive review questions covering each subtopic.'
+    sampleQuestionClosing: 'End with 4 comprehensive review questions covering each subtopic.'
   },
   {
     id: 'prepare-exam',
     label: 'Prepare for exam',
     icon: '🎯',
-    description: 'High-yield exam points, expected board questions, and mark-scoring tips.',
-    taskInstruction: 'Focus specifically on high-yield exam concepts, standard marking scheme requirements, and recurring board questions.',
+    description: 'High-yield exam review, recurring question patterns, and marking guidelines.',
+    taskInstruction: 'Focus specifically on core syllabus concepts, standard marking scheme requirements, and recurring question patterns.',
     outputStructure: [
-      'Most frequently asked exam sub-topics and weightage trends',
-      'Exact definition wording needed for full marks',
-      'Common examiner traps and where students lose marks',
-      'Model 2-mark, 3-mark, and 5-mark question structures with ideal answers',
-      'Key keywords examiners look for when grading'
+      'Frequently tested sub-topics and core conceptual areas',
+      'Accurate definitions and keywords required for full marks',
+      'Common examiner traps where students lose marks',
+      'Model 2-mark, 3-mark, and 5-mark question structures with ideal answers'
     ],
-    sampleQuestionClosing: 'Provide 3 high-probability exam questions with ideal bulleted answer structures.'
-  },
-  {
-    id: 'revise',
-    label: 'Revise',
-    icon: '🔄',
-    description: 'Fast active-recall recap for quick revision before a class test.',
-    taskInstruction: 'Conduct a rapid active recall revision summary designed to refresh memory quickly.',
-    outputStructure: [
-      'Rapid fire bullet summary of must-know facts',
-      'Formula / concept cheat sheet table',
-      'Difference between easily confused terms',
-      'Quick true/false and fill-in-the-blank self-check items'
-    ],
-    sampleQuestionClosing: 'End with 5 rapid-fire flashcard-style quiz questions with hidden answers.'
-  },
-  {
-    id: 'generate-questions',
-    label: 'Generate practice questions',
-    icon: '❓',
-    description: 'Diverse practice questions (MCQ, Short, Long, Case-based) with solutions.',
-    taskInstruction: 'Create a balanced set of practice questions matching the school exam pattern, graded from easy to challenging.',
-    outputStructure: [
-      '3 Multiple Choice Questions (MCQs) with options',
-      '2 Short Answer (2 marks) conceptual questions',
-      '1 Long Answer / Application / Case-based question',
-      'Complete step-by-step answer key with explanations for each question'
-    ],
-    sampleQuestionClosing: 'Provide complete solutions and explain why the incorrect MCQ options are wrong.'
+    sampleQuestionClosing: 'Provide 3 high-yield questions with model bulleted answer structures.'
   },
   {
     id: 'take-mock-test',
     label: 'Take a mock test',
     icon: '⏱️',
-    description: 'Interactive timed quiz simulation where AI tests you step-by-step.',
+    description: 'Interactive quiz simulation where AI tests you step-by-step.',
     taskInstruction: 'Act as an interactive exam invigilator and tutor. Present questions one at a time and wait for my answer before giving feedback.',
     outputStructure: [
       'Present Question 1 first with specified marks',
       'Wait for the student to submit their answer',
-      'Grade the answer out of full marks, highlight strengths and gaps',
+      'Evaluate the answer, highlight strengths and gaps',
       'Provide the model answer and move to the next question'
     ],
     sampleQuestionClosing: 'Start immediately by asking me Question 1 only.'
-  },
-  {
-    id: 'solve-problem',
-    label: 'Solve a problem',
-    icon: '🧩',
-    description: 'Step-by-step problem-solving guide teaching the underlying method.',
-    taskInstruction: 'Guide me through solving numerical or conceptual problems step-by-step without skipping intermediate steps.',
-    outputStructure: [
-      'Identification of given data and required result',
-      'Underlying concept and governing formula/rule',
-      'Step-by-step mathematical working with units at each stage',
-      'Alternative or cross-check verification method',
-      'One similar practice problem for me to try on my own'
-    ],
-    sampleQuestionClosing: 'End with a similar practice problem for me to solve independently.'
   },
   {
     id: 'improve-answer',
     label: 'Improve an answer',
     icon: '✍️',
     description: 'Critique and refine an existing student answer for better clarity and marks.',
-    taskInstruction: 'Review my draft answer, point out conceptual errors or missing keywords, and show how to upgrade it for maximum marks.',
+    taskInstruction: 'Review my draft answer, point out conceptual errors or missing keywords, and show how to upgrade it for clarity and marks.',
     outputStructure: [
       'Evaluation of the draft answer (Strengths vs Gaps)',
-      'Missing scientific/literary keywords required by marking schemes',
+      'Missing scientific/literary keywords required by syllabus',
       'Upgraded model answer rewritten cleanly',
-      'Explanation of why the upgraded version scores higher'
+      'Explanation of why the upgraded version is clearer'
     ],
     sampleQuestionClosing: 'Ask me to provide my draft answer so you can critique it constructively.'
   },
@@ -145,19 +194,20 @@ export const STUDY_GOALS: GoalOption[] = [
     label: 'Explain a difficult concept',
     icon: '🧠',
     description: 'Demystify challenging ideas using simple analogies and visual mental models.',
-    taskInstruction: 'Deconstruct this notoriously tricky concept using simple relatable analogies and visual mental models.',
+    taskInstruction: 'Deconstruct this tricky concept using simple relatable analogies and visual mental models.',
     outputStructure: [
       'Why this concept usually confuses students and the intuition behind it',
-      'The "In Plain English" real-life analogy (e.g. water pipes for electric circuits)',
-      'Scientific/Formal explanation connecting back to the analogy',
-      'Key takeaway rule of thumb to never forget it'
+      'The "In Plain English" real-life analogy',
+      'Formal explanation connecting back to the analogy',
+      'Key takeaway rule of thumb'
     ],
     sampleQuestionClosing: 'Ask me a simple scenario question to verify if the analogy clicked for me.'
   },
-  // ─── CREATE goals — each has its own explicit task identity ────────────────
+
+  // ─── CREATE goals (Under "More options") ────────────────────────────────────
   {
     id: 'create-poster',
-    label: 'Create a poster',
+    label: 'Create a poster layout',
     icon: '🖼️',
     description: 'Design a structured educational poster layout with sections and visual suggestions.',
     taskInstruction: 'Help me plan and structure a detailed educational poster on this topic. Describe the layout, sections, headings, key visuals, colour suggestions, and content for each section.',
@@ -166,7 +216,7 @@ export const STUDY_GOALS: GoalOption[] = [
       'Layout structure (sections and their positions)',
       'Content bullet points for each section',
       'Key diagram or visual description to include',
-      'Colour scheme and design tips for a school display'
+      'Design tips for a school display'
     ],
     sampleQuestionClosing: 'Suggest 3 alternative poster title options at the end.'
   },
@@ -178,10 +228,10 @@ export const STUDY_GOALS: GoalOption[] = [
     taskInstruction: 'Create a well-structured comparison table that clearly contrasts the key properties, characteristics, or differences related to this topic.',
     outputStructure: [
       'A neatly formatted comparison/contrast table with labelled columns and rows',
-      'At least 5–6 distinct comparison parameters relevant to the syllabus',
+      'At least 4–6 distinct comparison parameters relevant to the syllabus',
       'A one-sentence summary of the key difference at the end'
     ],
-    sampleQuestionClosing: 'Highlight the 2 most important differences that are frequently asked in board exams.'
+    sampleQuestionClosing: 'Highlight the 2 most important differences that are frequently tested.'
   },
   {
     id: 'create-diagram',
@@ -196,7 +246,7 @@ export const STUDY_GOALS: GoalOption[] = [
       'Arrow directions and what they indicate',
       'Common mistakes students make when drawing this diagram'
     ],
-    sampleQuestionClosing: 'List the labels that are most commonly asked to be identified in board exams.'
+    sampleQuestionClosing: 'List the labels that are most commonly asked to be identified in school exams.'
   },
   {
     id: 'create-mindmap',
@@ -210,7 +260,7 @@ export const STUDY_GOALS: GoalOption[] = [
       '3–5 leaf nodes / key facts under each branch',
       'Connections between related branches where relevant'
     ],
-    sampleQuestionClosing: 'Suggest which branches to study first for maximum exam marks.'
+    sampleQuestionClosing: 'Suggest which branches to study first for solid conceptual foundation.'
   },
   {
     id: 'create-presentation',
@@ -227,7 +277,8 @@ export const STUDY_GOALS: GoalOption[] = [
     ],
     sampleQuestionClosing: 'Suggest one engaging opening line the presenter could use to start the presentation confidently.'
   },
-  // ─── BUILD goals — each has its own explicit task identity ────────────────
+
+  // ─── BUILD goals (Under "More options") ─────────────────────────────────────
   {
     id: 'code',
     label: 'Write code',
@@ -252,7 +303,7 @@ export const STUDY_GOALS: GoalOption[] = [
       'Identified bug or error diagnosis (Syntax / Logic / Runtime)',
       'Explanation of why this error happens in beginner terms',
       'Corrected code block with changed lines highlighted',
-      'Quick debugging tip / checklist for school exams and practicals'
+      'Quick debugging tip / checklist for practicals'
     ],
     sampleQuestionClosing: 'Ask me to verify if the corrected code runs without errors on my computer.'
   },
@@ -263,7 +314,7 @@ export const STUDY_GOALS: GoalOption[] = [
     description: 'Line-by-line explanation of code in simple student language without complex jargon.',
     taskInstruction: 'Walk through this code step-by-step in clear, student-friendly language. Explain the role of each variable, control structure (loops, conditionals), and function without confusing jargon.',
     outputStructure: [
-      'High-level purpose of the code in 1-2 plain English sentences',
+      'High-level purpose of the code in 1-2 plain sentences',
       'Step-by-step line-by-line breakdown of how the execution flows',
       'Key programming concepts demonstrated (variables, data types, loops, conditions)',
       'Dry-run trace table showing how variable values change'
@@ -277,7 +328,7 @@ export const STUDY_GOALS: GoalOption[] = [
     description: 'Feasible school science exhibition or tech project ideas with realistic materials.',
     taskInstruction: 'Brainstorm creative, feasible school science or technology project ideas related to this topic. Ensure the materials are accessible, safe, and realistic for a Class 8–10 student within a modest budget.',
     outputStructure: [
-      'Core project title and catchy exhibit tagline',
+      'Core project title and exhibit tagline',
       'Scientific or technological principle demonstrated',
       'Required low-cost, readily available materials list',
       'Step-by-step construction methodology',
@@ -292,7 +343,7 @@ export const STUDY_GOALS: GoalOption[] = [
     description: 'Structured project roadmap with timeline, milestones, and report outline.',
     taskInstruction: 'Provide a structured, step-by-step execution roadmap and project report framework for a school project on this topic. Outline the milestones, research phases, practical steps, and presentation structure.',
     outputStructure: [
-      'Project objective and hypothesis / problem statement',
+      'Project objective and problem statement',
       'Phase 1: Background research and planning (Week 1)',
       'Phase 2: Experimentation / Prototype building (Week 2)',
       'Phase 3: Observation, data recording and analysis (Week 3)',
@@ -311,22 +362,16 @@ export interface StyleOption {
 
 export const EXPLANATION_STYLES: StyleOption[] = [
   {
-    id: 'very-simple',
-    label: 'Very simple',
-    instruction: 'Use extremely simple vocabulary, short sentences, and everyday language without jargon.',
-    tone: 'Elementary and super clear'
-  },
-  {
     id: 'simple',
     label: 'Simple',
     instruction: 'Keep language accessible, clear, and easy to read while maintaining correct standard terms.',
     tone: 'Student-friendly and balanced'
   },
   {
-    id: 'detailed',
-    label: 'Detailed',
-    instruction: 'Provide thorough, academically precise explanations with deep conceptual rigor and clear structure.',
-    tone: 'Comprehensive and thorough'
+    id: 'very-simple',
+    label: 'Very simple',
+    instruction: 'Use extremely simple vocabulary, short sentences, and everyday language without jargon.',
+    tone: 'Elementary and super clear'
   },
   {
     id: 'with-examples',
@@ -339,6 +384,12 @@ export const EXPLANATION_STYLES: StyleOption[] = [
     label: 'With real-life examples',
     instruction: 'Anchor every concept to everyday real-world phenomena (e.g., sports, cooking, vehicles, daily technology).',
     tone: 'Relatable and real-world grounded'
+  },
+  {
+    id: 'detailed',
+    label: 'Detailed',
+    instruction: 'Provide thorough, academically precise explanations with deep conceptual clarity and clear structure.',
+    tone: 'Comprehensive and thorough'
   }
 ];
 
@@ -355,42 +406,42 @@ export const PROMPT_COMPONENTS: Record<string, PromptComponentExplanation> = {
     name: 'ROLE',
     icon: '🎯',
     title: 'Expert Persona & Role',
-    whyItWorks: 'Tells the AI how it should approach the task, setting the tone of an encouraging, experienced school teacher.',
+    whyItWorks: 'Instructs the AI to act as a supportive, encouraging school teacher rather than an aloof answer machine.',
     exampleInPrompt: 'Act as an experienced Class {CLASS} {SUBJECT} teacher.'
   },
   studentLevel: {
     name: 'STUDENT LEVEL',
     icon: '📚',
-    title: 'Grade & Target Level',
-    whyItWorks: 'Helps the AI keep the explanation strictly appropriate for your class level—preventing overly simple nursery answers or overwhelming college math.',
-    exampleInPrompt: 'Explain for a Class {CLASS} student following standard curriculum.'
+    title: 'Grade & Board Context',
+    whyItWorks: 'Keeps explanations strictly aligned with your class level and syllabus depth—avoiding college-level complexity or infant-level oversimplification.',
+    exampleInPrompt: 'Class {CLASS} student level following {BOARD} syllabus.'
   },
   context: {
     name: 'CONTEXT & TOPIC',
     icon: '📖',
-    title: 'Subject & Topic Context',
-    whyItWorks: 'Focuses the AI on the exact chapter boundaries so it doesn’t wander off into unrelated topics.',
+    title: 'Topic & Reference Material',
+    whyItWorks: 'Anchors the AI strictly to your chapter topic or pasted syllabus text so it stays on track.',
     exampleInPrompt: 'Topic: {TOPIC} under {SUBJECT}.'
   },
   task: {
     name: 'TASK & GOAL',
     icon: '📝',
-    title: 'Clear Goal & Purpose',
-    whyItWorks: 'Defines the exact learning goal (notes, questions, conceptual intuition) so the response is purposeful.',
+    title: 'Clear Goal & Method',
+    whyItWorks: 'Specifies whether you want concept intuition, active-recall revision, problem-solving hints, or practice questions.',
     exampleInPrompt: '{TASK_INSTRUCTION}'
   },
   outputFormat: {
     name: 'OUTPUT FORMAT',
     icon: '📋',
     title: 'Structured Organization',
-    whyItWorks: 'Controls how the answer is organized with headings, bullet points, and tables rather than an unreadable wall of text.',
+    whyItWorks: 'Requires clear section headings, bullet points, and highlighted formulas instead of an unreadable wall of text.',
     exampleInPrompt: 'Use clear headings, bullet points, and highlight key terms in bold.'
   },
   constraints: {
     name: 'CONSTRAINTS',
     icon: '⚠️',
-    title: 'Guardrails & Safety Rules',
-    whyItWorks: 'Stops the AI from giving away answers without explanation, keeps language student-friendly, and prompts active learning.',
-    exampleInPrompt: 'Help me understand the topic rather than simply giving me an answer to copy.'
+    title: 'Learning Guardrails & Checks',
+    whyItWorks: 'Prevents cheating, asks for step-by-step reasoning, and prompts source checks against your textbook.',
+    exampleInPrompt: 'Help me understand the underlying method; do not simply solve problems for me to copy.'
   }
 };

@@ -49,25 +49,25 @@ export function Footer() {
               <li>
                 <Link href="/" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
                   <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
-                  <span>Overview & Guide</span>
+                  <span>Overview &amp; Guide</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/#study-builder" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
+                  <span>Build Study Prompt</span>
                 </Link>
               </li>
               <li>
                 <Link href="/which-ai" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
                   <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
-                  <span>Step 1: Which AI for My Task?</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/prompt-builder" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
-                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
-                  <span>Step 2: Guided Prompt Builder</span>
+                  <span>AI Tools for Students</span>
                 </Link>
               </li>
               <li>
                 <Link href="/verify" className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#c9a227]">
                   <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
-                  <span>Step 3: Check & Verify Answers</span>
+                  <span>Check &amp; Verify Answers</span>
                 </Link>
               </li>
               <li className="pt-1">
@@ -144,10 +144,12 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom bar with creator credit strictly placed in bottom-right */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
-          <p>© {new Date().getFullYear()} Prarambha Path Evening School. All rights reserved.</p>
-          <p className="text-white/40">A student-led initiative from Savardhat, Goa • Free for every learner</p>
+          <p>© {new Date().getFullYear()} Prarambha Path Evening School. Free for every learner.</p>
+          <p className="text-white/70 font-medium text-xs sm:text-right">
+            Built by Parth D. Karpe with AI.
+          </p>
         </div>
       </div>
     </footer>

@@ -60,8 +60,9 @@ test('AI Recommender — All Study Tasks Have Valid Tool Recommendations', () =>
     for (const tool of rec.tools) {
       assert.ok(tool.id, 'Tool must have an id');
       assert.ok(tool.name, 'Tool must have a name');
-      assert.ok(tool.accessUrl.startsWith('https://'), 'Tool must have a secure accessUrl');
-      assert.ok(tool.capabilities.length > 0, 'Tool must list capabilities');
+      const url = tool.officialUrl || tool.accessUrl;
+      assert.ok(url && url.startsWith('https://'), 'Tool must have a secure officialUrl');
+      assert.ok((tool.categories && tool.categories.length > 0) || (tool.capabilities && tool.capabilities.length > 0), 'Tool must list categories or capabilities');
     }
   }
 });
