@@ -1,9 +1,14 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, MapPin, Mail, ExternalLink } from 'lucide-react';
+import { ShieldCheck, MapPin, Mail, ExternalLink, MessageSquareHeart } from 'lucide-react';
+import { useFeedback } from '@/components/FeedbackContext';
 
 export function Footer() {
+  const { openFeedback } = useFeedback();
+
   return (
     <footer className="bg-[#0d1f35] text-white border-t border-white/10 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -34,9 +39,20 @@ export function Footer() {
               Inspired by the Gurukul tradition, Prarambh Path’s AI Study Toolkit teaches students in Classes 8–10 to use AI as an interactive study mentor rather than an answer machine.
             </p>
 
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c9a227]/10 text-[#f0d074] text-xs font-semibold border border-[#c9a227]/25">
-              <ShieldCheck className="w-4 h-4 text-[#c9a227]" />
-              <span>Core Philosophy: <strong>Choose. Ask. Check. Learn.</strong></span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#c9a227]/10 text-[#f0d074] text-xs font-semibold border border-[#c9a227]/25">
+                <ShieldCheck className="w-4 h-4 text-[#c9a227]" />
+                <span>Core Philosophy: <strong>Choose. Ask. Check. Learn.</strong></span>
+              </div>
+
+              <button
+                type="button"
+                onClick={openFeedback}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#2fa8cc]/20 hover:bg-[#2fa8cc]/30 text-[#2fa8cc] hover:text-white border border-[#2fa8cc]/30 text-xs font-bold transition-all cursor-pointer"
+              >
+                <MessageSquareHeart className="w-3.5 h-3.5" />
+                <span>Share your feedback 💬</span>
+              </button>
             </div>
           </div>
 
@@ -69,6 +85,16 @@ export function Footer() {
                   <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#c9a227]" />
                   <span>Check &amp; Verify Answers</span>
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={openFeedback}
+                  className="group flex items-center gap-1.5 text-white/60 transition-all duration-200 hover:text-[#2fa8cc] text-left cursor-pointer"
+                >
+                  <span className="h-px w-3 rounded-full bg-white/20 transition-all group-hover:w-5 group-hover:bg-[#2fa8cc]" />
+                  <span>Share your feedback 💬</span>
+                </button>
               </li>
               <li className="pt-1">
                 <a

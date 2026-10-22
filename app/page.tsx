@@ -8,13 +8,16 @@ import {
   Sparkles,
   ChevronDown,
   Compass,
-  ExternalLink
+  ExternalLink,
+  MessageSquareHeart
 } from 'lucide-react';
 import { SinglePageBuilder } from '@/components/SinglePageBuilder';
 import { AI_TOOLS } from '@/data/ai-tools';
+import { useFeedback } from '@/components/FeedbackContext';
 
 export default function HomePage() {
   const builderRef = useRef<HTMLDivElement>(null);
+  const { openFeedback } = useFeedback();
 
   const scrollToBuilder = () => {
     builderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -295,6 +298,37 @@ export default function HomePage() {
               <span>Learn the 3-step checking habit</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          STUDENT FEEDBACK SECTION (NEAR BOTTOM)
+      ════════════════════════════════════════════════════════════════════════ */}
+      <section className="bg-gradient-to-b from-[#f8fafc] to-[#eef2f6] py-10 sm:py-14 border-t border-[#e2e8f0]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2fa8cc]/10 text-[#1f4e79] text-xs font-bold border border-[#2fa8cc]/20">
+            <MessageSquareHeart className="w-3.5 h-3.5 text-[#2fa8cc]" />
+            <span>Student Voice</span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0d1f35] font-display">
+            Help us make your study toolkit better!
+          </h2>
+
+          <p className="text-xs sm:text-sm text-[#5a6b7b] max-w-xl mx-auto leading-relaxed">
+            Have a suggestion, found something confusing, or have an idea for a new prompt? Tell us what you think. No login or personal information required.
+          </p>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={openFeedback}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-[#1f4e79] hover:bg-[#2fa8cc] shadow-md hover:shadow-lg transition-all cursor-pointer min-h-[44px]"
+            >
+              <MessageSquareHeart className="w-4 h-4" />
+              <span>Share your feedback 💬</span>
+            </button>
           </div>
         </div>
       </section>

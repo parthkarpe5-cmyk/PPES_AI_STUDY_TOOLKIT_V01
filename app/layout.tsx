@@ -4,6 +4,8 @@ import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
+import { FeedbackProvider } from '@/components/FeedbackContext';
+import { FeedbackModal } from '@/components/FeedbackModal';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -49,11 +51,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[#fafbfc] text-[#1a1a1a] selection:bg-[#ff6b00] selection:text-white font-sans">
-        <Navbar />
-        <main className="flex-1 flex flex-col">
-          {children}
-        </main>
-        <Footer />
+        <FeedbackProvider>
+          <Navbar />
+          <main className="flex-1 flex flex-col">
+            {children}
+          </main>
+          <Footer />
+          <FeedbackModal />
+        </FeedbackProvider>
         <Analytics />
       </body>
     </html>

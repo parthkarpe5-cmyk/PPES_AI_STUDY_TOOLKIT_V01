@@ -17,12 +17,15 @@ import { StudyProfileModal } from '@/components/StudyProfileModal';
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [profile, setProfile] = useState<StudyProfile>(() => {
-    return typeof window !== 'undefined' ? getStoredProfile() : DEFAULT_PROFILE;
-  });
+  // Always start with DEFAULT_PROFILE so server and client render identical HTML.
+  // localStorage is read in useEffect (client-only) to avoid SSR/CSR hydration mismatch.
+  const [profile, setProfile] = useState<StudyProfile>(DEFAULT_PROFILE);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   useEffect(() => {
+    // Sync from localStorage after first paint so there is no server/client mismatch.
+    setProfile(getStoredProfile());
+
     const handleProfileChange = () => {
       setProfile(getStoredProfile());
     };
